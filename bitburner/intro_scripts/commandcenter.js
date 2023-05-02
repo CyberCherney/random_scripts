@@ -60,7 +60,7 @@ function decision(rooted, ns) {
 	var max = Number(ns.getServerBaseSecurityLevel(topDog));
 	var min = Number(ns.getServerMinSecurityLevel(topDog));
 	var current = Number(ns.getServerSecurityLevel(topDog));
-	var threshhold = Number((max - min) / (current - min));
+	var threshhold = Number((current - min) / (max - min));
 	ns.print(threshhold);
 	if (threshhold > .75) {
 		var action = 'weaken';
