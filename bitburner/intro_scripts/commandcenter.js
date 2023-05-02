@@ -50,6 +50,7 @@ function decision(rooted, ns) {
 	for (let i = 0; i < rooted.length; i++) {
 		var cash = ns.getServerMoneyAvailable(rooted[i]);
 		if (cash > dollars) {
+			dollars = cash;
 			topDog = rooted[i];
 		}
 	}
