@@ -9,12 +9,13 @@ export async function main(ns) {
 
 // Basic function to find all available hosts
 function crawler(ns) {
+	var mine = ns.getPurchasedServers();
 	var allhosts = ns.scan();
 	var unique = allhosts;
 	for (let i = 0; i < unique.length; i++) {
 		var iter = ns.scan(unique[i]);
 		for (let k=0; k < iter.length; k++) {
-			if (allhosts.indexOf(iter[k]) == -1) {
+			if (allhosts.indexOf(iter[k]) == -1 && mine.indexOf(iter[k] == -1)) {
 				allhosts.push(iter[k]);
 			}
 		}
@@ -23,6 +24,7 @@ function crawler(ns) {
     	return index === self.indexOf(elem);
 	})
 	ns.print(unique);
+	ownedServers(mine, ns);
 	scanner(unique, ns);
 }
 
@@ -74,7 +76,10 @@ function rooter(rootAccess, host, ns) {
 			//ns.print('Running nuke');
 			ns.nuke(host);
 		}
+		var ram = Number(ns.getServerMaxRam(host));
+		if (ram > 0) {
 		ezhack(host, ns);
+		}
 }
 
 // places my basic hacking script, which is 1.95gb
@@ -83,7 +88,7 @@ function rooter(rootAccess, host, ns) {
 function ezhack(host, ns) {
 	var check = ns.isRunning('ezhack.js', host, host);
 	ns.print(check + ' for ezhack running on ' + host);
-	if (check == false) {
+	if (check == false  && host != 'home') {
 		ns.scp('ezhack.js', host);
 		var ram = Number(ns.getServerMaxRam(host));
 		ns.print(ram);
@@ -92,5 +97,23 @@ function ezhack(host, ns) {
 			ns.exec('ezhack.js', host, threads, host);
 		}
 
+	}
+}
+
+// places grow.js on owned servers
+function ownedServers(host, ns) {
+	for (let i=0; i < host.length; i++) {
+		var check = ns.isRunning('grow.js', host[i], host[i]);
+		ns.print(check + ' for grow running on ' + host[i]);
+		if (check == false) {
+			ns.scp('grow.js', host[i]);
+			var ram = Number(ns.getServerMaxRam(host[i]));
+			ns.print(ram);
+			if (ram >= 1.95) {
+				var threads = Math.floor(ram / 1.95);
+				ns.exec('grow.js', host[i], threads, host[i]);
+			}
+
+		}
 	}
 }

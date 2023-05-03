@@ -49,7 +49,7 @@ function decision(rooted, ns) {
 	var dollars = 0;
 	for (let i = 0; i < rooted.length; i++) {
 		var cash = ns.getServerMoneyAvailable(rooted[i]);
-		if (cash > dollars) {
+		if (cash > dollars && rooted[i] != 'home') {
 			dollars = cash;
 			topDog = rooted[i];
 		}
@@ -62,6 +62,9 @@ function decision(rooted, ns) {
 	var min = Number(ns.getServerMinSecurityLevel(topDog));
 	var current = Number(ns.getServerSecurityLevel(topDog));
 	var threshhold = Number((current - min) / (max - min));
+
+	var maxDollars = Number(ns.getServerMaxMoney(topDog));
+	var percentFull = maxDollars / dollars;
 	ns.print(threshhold);
 	if (threshhold > .75) {
 		var action = 'weaken';
