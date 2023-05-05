@@ -3,6 +3,8 @@ export async function main(ns) {
 	ns.clearLog();
 	ns.disableLog('getServerRequiredHackingLevel');
 	ns.disableLog('getServerNumPortsRequired')
+	ns.disableLog('getServerMaxRam');
+	ns.disableLog('exec');
 	ns.print('Starting');
 	crawler(ns);
 }
@@ -10,22 +12,21 @@ export async function main(ns) {
 // Basic function to find all available hosts
 function crawler(ns) {
 	var mine = ns.getPurchasedServers();
-	var allhosts = ns.scan();
-	var unique = allhosts;
-	for (let i = 0; i < unique.length; i++) {
-		var iter = ns.scan(unique[i]);
+	var allhosts = ns.scan('n00dles');
+	for (let i = 0; i < allhosts.length; i++) {
+		var iter = ns.scan(allhosts[i]);
 		for (let k=0; k < iter.length; k++) {
-			if (allhosts.indexOf(iter[k]) == -1 && mine.indexOf(iter[k] == -1)) {
+			if (allhosts.indexOf(iter[k]) == -1 && !mine.includes(iter[k])) {
+				ns.print(iter[k]);
 				allhosts.push(iter[k]);
+
 			}
 		}
 	}
-	unique = allhosts.filter(function(elem, index, self) {
-    	return index === self.indexOf(elem);
-	})
-	ns.print(unique);
+	//ns.print(mine);
+	ns.print(allhosts);
 	ownedServers(mine, ns);
-	scanner(unique, ns);
+	scanner(allhosts, ns);
 }
 
 // transition function for checking if high enough hack level to root
@@ -71,7 +72,7 @@ function rooter(rootAccess, host, ns) {
 		}
 	}
 		var required = ns.getServerNumPortsRequired(host);
-		ns.print(openPort + ' ports open of ' + required + ' ports required');
+		//ns.print(openPort + ' ports open of ' + required + ' ports required');
 		if (openPort >= required && rootAccess == false) {
 			//ns.print('Running nuke');
 			ns.nuke(host);
@@ -87,11 +88,11 @@ function rooter(rootAccess, host, ns) {
 // (useful as a fallback)
 function ezhack(host, ns) {
 	var check = ns.isRunning('ezhack.js', host, host);
-	ns.print(check + ' for ezhack running on ' + host);
+	//ns.print(check + ' for ezhack running on ' + host);
 	if (check == false  && host != 'home') {
 		ns.scp('ezhack.js', host);
 		var ram = Number(ns.getServerMaxRam(host));
-		ns.print(ram);
+		//ns.print(ram);
 		if (ram >= 1.95) {
 			var threads = Math.floor(ram / 1.95);
 			ns.exec('ezhack.js', host, threads, host);
@@ -104,13 +105,13 @@ function ezhack(host, ns) {
 function ownedServers(host, ns) {
 	for (let i=0; i < host.length; i++) {
 		var check = ns.isRunning('grow.js', host[i], host[i]);
-		ns.print(check + ' for grow running on ' + host[i]);
+		//ns.print(check + ' for grow running on ' + host[i]);
 		if (check == false) {
 			ns.scp('grow.js', host[i]);
 			var ram = Number(ns.getServerMaxRam(host[i]));
-			ns.print(ram);
-			if (ram >= 1.95) {
-				var threads = Math.floor(ram / 1.95);
+			//ns.print(ram);
+			if (ram >= 2.1) {
+				var threads = Math.floor(ram / 2.1);
 				ns.exec('grow.js', host[i], threads, host[i]);
 			}
 

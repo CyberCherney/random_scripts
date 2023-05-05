@@ -30,13 +30,14 @@ export async function main(ns) {
 			ns.print(betterRam);
 			if (betterRam > ram) {
 				var cost = basecost * betterRam /2;
+				//ns.print(cost);
 				if (money > cost) {
 					ns.kill('grow.js', owned[i], owned[i]);
 					ns.deleteServer(owned[i]);
 					ns.purchaseServer(owned[i], betterRam);
 				}
 			}
-			if (betterRam > ram) {
+			if (betterRam == ram) {
 				var x = false;
 			}
 		}

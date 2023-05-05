@@ -68,6 +68,8 @@ function decision(rooted, ns) {
 	ns.print(threshhold);
 	if (threshhold > .75) {
 		var action = 'weaken';
+	} else if (percentFull < .4) {
+		var action = 'grow';
 	} else {
 		var action = 'hack';
 	}

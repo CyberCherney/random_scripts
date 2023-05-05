@@ -10,11 +10,12 @@
 
 /** @param {NS} ns */
 export async function main(ns) {
-	await ns.run('ezhack.js', 800, 'n00dles');
+	await ns.run('grow.js', 1600, 'n00dles');
 	await ns.write('ram.txt', '1', 'w');
 	while (true) {
 		await ns.run('crawler.js');
 		await ns.run('commandcenter.js');
+		await ns.asleep(10000);
 		await ns.run('serverbuyer.js')
 		await ns.asleep(50000);
 	}
