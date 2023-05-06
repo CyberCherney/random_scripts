@@ -22,6 +22,7 @@ export async function main(ns) {
 				champ[0] = moneyPerCost;
 				champ[1] = 'level';
 				champ[2] = i;
+				champ[3] = levelUpgradeCost;
 			}
 			var ramDollar = 0.143 * level + (core - 1) * (0.049);
 			var ramUpgradeCost = ns.hacknet.getRamUpgradeCost(i);
@@ -30,6 +31,7 @@ export async function main(ns) {
 				champ[0] = moneyPerCost;
 				champ[1] = 'ram';
 				champ[2] = i;
+				champ[3] = ramUpgradeCost;
 			}
 			var coreDollar = (1.04 ** ram) * 0.657 * level;
 			var coreUpgradeCost = ns.hacknet.getCoreUpgradeCost(i);
@@ -38,13 +40,15 @@ export async function main(ns) {
 				champ[0] = moneyPerCost;
 				champ[1] = 'core';
 				champ[2] = i;
+				champ[3] = coreUpgradeCost;
 			}
 		}
 		var nodeCost = ns.hacknet.getPurchaseNodeCost();
 		var cash = ns.getServerMoneyAvailable('home');
-		if (champ[0] > nodeCost && cash > champ[0]) {
+		if (nodeCost < champ[3] && cash > nodeCost) {
+			ns.print('Purchasing new node.');
 			ns.hacknet.purchaseNode();
-		} else if (cash > champ[0] && champ[0] > 0) {
+		} else if (cash > champ[3] && champ[0] > 0) {
 			if (champ[1] == 'level') {
 				ns.hacknet.upgradeLevel(champ[2], 1);
 				ns.print('Upgrading Level on ' + champ[2])
