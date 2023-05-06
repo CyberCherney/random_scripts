@@ -21,7 +21,7 @@ export async function main(ns) {
 		if (action == 'hack') {
 		await ns.hack(host);
 		}
-		if (action == 'weaken') {
+		if (action == 'weaken' || action == 'grow') {
 		await ns.weaken(host);
 		}
 	}

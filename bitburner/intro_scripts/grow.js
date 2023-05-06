@@ -19,10 +19,11 @@ export async function main(ns) {
 		}
 
 		if (action == 'hack') {
-		await ns.grow(host);
-		}
-		if (action == 'weaken') {
 		await ns.hack(host);
+		} else if (action == 'weaken') {
+		await ns.weaken(host);
+		} else if (action == 'grow') {
+		await ns.grow(host);
 		}
 	}
 }

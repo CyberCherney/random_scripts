@@ -5,18 +5,21 @@
  * then it is run with the max amount of threads and fed two files: action.txt and host.txt
  * action determines if it will hack or weaken, host determines the target
  * commandcenter.js controls what is in those files and placing them on rooted machines
- * sets a ram text file for the server buying script, then runs it
+ * server buyer automates filling out and upgrading servers owned
+ * hacknet automates the nodes and upgrading them in a semi-efficient way
+ * ends by spawning itself
 */
 
 /** @param {NS} ns */
 export async function main(ns) {
-	await ns.run('grow.js', 1600, 'n00dles');
-	await ns.write('ram.txt', '1', 'w');
-	while (true) {
-		await ns.run('crawler.js');
-		await ns.run('commandcenter.js');
-		await ns.asleep(10000);
-		await ns.run('serverbuyer.js')
-		await ns.asleep(50000);
+	await ns.run('crawler.js');
+	await ns.run('commandcenter.js');
+	await ns.asleep(10000);
+	await ns.run('serverbuyer.js')
+	await ns.asleep(50000);
+	await ns.run('hacknet.js');
+	if (!ns.fileExists('SQLInject.exe', 'home')) {
+		await ns.run('scriptbuyer.js');
 	}
+	ns.spawn('automator.js');
 }
