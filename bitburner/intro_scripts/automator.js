@@ -15,11 +15,10 @@ export async function main(ns) {
 	await ns.run('crawler.js');
 	await ns.run('commandcenter.js');
 	await ns.asleep(10000);
-	await ns.run('serverbuyer.js')
+	if (ns.read('ram.txt') != 'done') {
+		await ns.run('serverbuyer.js')
+	}
 	await ns.asleep(50000);
 	await ns.run('hacknet.js');
-	if (!ns.fileExists('SQLInject.exe', 'home')) {
-		await ns.run('scriptbuyer.js');
-	}
 	ns.spawn('automator.js');
 }

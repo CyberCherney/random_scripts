@@ -10,6 +10,9 @@ export async function main(ns) {
 	ns.disableLog('getServerMoneyAvailable');
 	var ramPower = ns.read('ram.txt');
 	ns.print(ramPower);
+	if (ramPower > 20) {
+		ns.write('ram.txt', 'done');
+	}
 	const basecost = 110000;
 	const owned = ns.getPurchasedServers();
 	const name = 'raccoon-';
@@ -28,7 +31,7 @@ export async function main(ns) {
 			var money = ns.getServerMoneyAvailable('home');
 			var betterRam = 2 ** ramPower;
 			ns.print(betterRam);
-			if (betterRam > ram) {
+			if (betterRam > ram && ramPower < 21) {
 				var cost = basecost * betterRam /2;
 				//ns.print(cost);
 				if (money > cost) {
@@ -41,7 +44,7 @@ export async function main(ns) {
 				var x = false;
 			}
 		}
-		if (x == false) {
+		if (x == false && ramPower < 21) {
 			ramPower++;
 			ns.write('ram.txt', ramPower, 'w');
 		}
