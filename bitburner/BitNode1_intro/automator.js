@@ -12,13 +12,16 @@
 
 /** @param {NS} ns */
 export async function main(ns) {
-	await ns.run('crawler.js');
-	await ns.run('commandcenter.js');
-	await ns.asleep(10000);
-	if (ns.read('ram.txt') != 'done') {
-		await ns.run('serverbuyer.js')
+	ns.run('homeenum.js');
+	while (true) {
+		await ns.run('basic.js');
+		await ns.run('commandcenter.js');
+		await ns.run('hacknetserver.js');
+		await ns.asleep(10000);
+		if (ns.read('ram.txt') != 'done') {
+			//await ns.run('serverbuyer.js')
+			//await ns.asleep(50000);
+			//await ns.run('oldhacknet.js'); outdated
+		}
 	}
-	await ns.asleep(50000);
-	await ns.run('hacknet.js');
-	ns.spawn('automator.js');
 }

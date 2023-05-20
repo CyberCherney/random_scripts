@@ -1,1 +1,1 @@
-This is a repo for random scripts from games, home automation, and the occasional random project that doesnt warrant a proper repo itself. 
+This is a repo for random scripts from games, home automation, and the occasional random project that doesn't warrant a proper repo itself. The bitburner scripts have mild spoilers for the game. I toss the scripts I make in the corresponding challenge I am on but that does not mean it is specific to solving that challenge. 

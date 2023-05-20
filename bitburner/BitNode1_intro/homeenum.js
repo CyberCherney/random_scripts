@@ -1,17 +1,22 @@
 /** @param {NS} ns */
-export async function main(ns) {
-	var mine = ns.getPurchasedServers();
-	var allhosts = ns.scan('n00dles');
-	for (let i = 0; i < allhosts.length; i++) {
-		var iter = ns.scan(allhosts[i]);
-		for (let k=0; k < iter.length; k++) {
-			var cash = ns.getServerMoneyAvailable(allhosts[i]);
-			if (cash != 0 && allhosts[i] != ns.read('host.txt') && allhosts[i] != 'home' && ns.hasRootAccess(allhosts[i])) {
-				ns.spawn('homehack.js', 3900, allhosts[i]);
-			}
-			if (allhosts.indexOf(iter[k]) == -1 && !mine.includes(iter[k])) {
-				allhosts.push(iter[k]);
 
+import { scan } from "basic.js";
+
+export async function main(ns) {
+	const servers = scan(ns);
+
+	var ram = ns.getServerMaxRam('home');
+	var neededRam = ns.getScriptRam('homehack.js');
+	var threads = Math.floor((ram - 20)/neededRam); 
+	for (let i = 0; i < servers.length; i++) {
+		if (ns.hasRootAccess(servers[i])) {
+			var cash = ns.getServerMoneyAvailable(servers[i]);
+			var max = ns.getServerMaxMoney(servers[i]);
+			if ((cash/max) > .3 && servers[i] != ns.read('host.txt')) {
+				ns.spawn('homehack.js', threads, servers[i]);
+			} else {
+				var host = ns.read('host.txt');
+				ns.spawn('homehack.js', threads, host);
 			}
 		}
 	}
