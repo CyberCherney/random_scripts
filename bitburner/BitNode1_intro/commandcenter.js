@@ -1,23 +1,13 @@
 /** @param {NS} ns */
+
+import { scan } from "basic.js";
+
 export async function main(ns) {
 	ns.clearLog();
-	var hosts = crawler(ns);
+	ns.disableLog('scp');
+	var hosts = scan(ns);
 	var rooted = isRooted(hosts, ns);
 	decision(rooted, ns);
-}
-
-// gets a list of all hosts
-function crawler(ns) {
-	var allhosts = ns.scan();
-	for (let i = 0; i < allhosts.length; i++) {
-		var iter = ns.scan(allhosts[i]);
-		for (let k = 0; k < iter.length; k++) {
-			if (allhosts.indexOf(iter[k]) == -1) {
-				allhosts.push(iter[k]);
-			}
-		}
-	}
-	return allhosts;
 }
 
 // checks if the hosts have been rooted
@@ -26,7 +16,7 @@ function isRooted(hosts, ns) {
 	var rooted = []
 	for (let i = 0; i < hosts.length; i++) {
 		var check = ns.hasRootAccess(hosts[i]);
-		if (check == true) {
+		if (check) {
 			rooted.push(hosts[i]);
 		}
 	}
@@ -41,21 +31,19 @@ function decision(rooted, ns) {
 	// this part will find the server with the highest money available
 	// after finding it the server is crowned topDog
 	var oldDog = ns.read('host.txt');
-	var oldCash = ns.getServerMoneyAvailable(oldDog);
-	if (oldCash == 0) {
-		var topDog = '';
-		var dollars = 0;
-		for (let i = 0; i < rooted.length; i++) {
-			var cash = ns.getServerMaxMoney(rooted[i]);
-			if (cash > dollars && rooted[i] != 'home') {
-				dollars = cash;
-				topDog = rooted[i];
-			}
+	var lvl = ns.getHackingLevel();
+
+	var topDog = '';
+	var dollars = 0;
+	for (let i = 0; i < rooted.length; i++) {
+		var cash = ns.getServerMaxMoney(rooted[i]);
+		var hackingReq = ns.getServerRequiredHackingLevel(rooted[i]);
+		if (cash > dollars && rooted[i] != 'home' && hackingReq < lvl) {
+			dollars = cash;
+			topDog = rooted[i];
 		}
-		ns.print('Top dog is ' + topDog);
-	} else {
-		var topDog = oldDog;
 	}
+	ns.print('Top dog is ' + topDog);
 
 
 	// checks an arbitrary percentage threshhold I set of .75
