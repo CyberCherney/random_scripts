@@ -9,7 +9,9 @@ export async function main(ns) {
 	var hashes = ns.hacknet.numHashes();
 	var iter = Math.floor(hashes / 4);
 	for (let i=0; i < iter; i++) {
-		ns.hacknet.spendHashes("Sell for Money");
+		//ns.hacknet.spendHashes("Sell for Money");
+		//ns.hacknet.spendHashes("Improve Studying");
+		ns.hacknet.spendHashes("Reduce Minimum Security", 'megacorp');
 	}
 
 	for (let i=0; i<5; i++) {
@@ -24,27 +26,27 @@ export async function main(ns) {
 			var ramCost = ns.hacknet.getRamUpgradeCost(j);
 			var levelCost = ns.hacknet.getLevelUpgradeCost(j);
 			array = [nodeCost, coreCost, cacheCost, ramCost, levelCost];
-			ns.print(cost);
+			//ns.print(cost);
 			for (let k = 0; k < 5; k++) {
 				//ns.print(array[k]);
 				if (array[k] <= cost) {
 					var cost = array[k];
 					var upgrade = array.indexOf(cost);
-					ns.print(upgrade);
+					//ns.print(upgrade);
 					var nodeNumber = j;
 					//ns.print(nodeNumber);
-					ns.print(cost + ' ' + upgrade + ' ' + nodeNumber);
+					//ns.print(cost + ' ' + upgrade + ' ' + nodeNumber);
 				}
 			}
 		}
 		if (ns.getServerMoneyAvailable('home') > cost) {
-			ns.print('upgrade ' + upgrade);
-			ns.print('cost ' + cost);
+			//ns.print('upgrade ' + upgrade);
+			//ns.print('cost ' + cost);
 			if (upgrade == 0) {ns.hacknet.purchaseNode();}
-			else if (upgrade == 1) {ns.hacknet.upgradeCore(nodeNumber)}
-			else if (upgrade == 2) {ns.hacknet.upgradeCache(nodeNumber)}
-			else if (upgrade == 3) {ns.hacknet.upgradeRam(nodeNumber)}
-			else if (upgrade == 4) {ns.hacknet.upgradeLevel(nodeNumber)}
+			else if (upgrade == 1) {ns.hacknet.upgradeCore(nodeNumber);}
+			else if (upgrade == 2) {ns.hacknet.upgradeCache(nodeNumber);}
+			else if (upgrade == 3) {ns.hacknet.upgradeRam(nodeNumber);}
+			else if (upgrade == 4) {ns.hacknet.upgradeLevel(nodeNumber);}
 		}
 	}
 }
