@@ -46,15 +46,17 @@ export function rooter(ns, host) {
 }
 
 // will run a script at 1 thread or max threads depending on input
-export function runScript(ns, host, script, threadCount) {
+export function runScript(ns, host, script, threadCount, forceRerun) {
 	var scriptCheck = ns.isRunning(script, host, host);
-	if (!ns.fileExists(script, host)) {ns.scp(script, host);}
-	if (!scriptCheck) {
+	var isRoot = ns.hasRootAccess(host);
+	if (forceRerun && host != 'home') {ns.killall(host)}
+	if (!scriptCheck && isRoot) {
+		ns.scp(script, host);
 		var serverRam = ns.getServerMaxRam(host);
 		var scriptRam = ns.getScriptRam(script);
 		if (serverRam >= scriptRam) {
 			if (threadCount == 'max') {var threads = Math.floor(serverRam/scriptRam);
-			} else {threads = 1;}
+			} else {threads = 1}
 			ns.exec(script, host, threads, host);
 		}
 
@@ -68,6 +70,7 @@ const hacknets = hacknetServers(ns);
 for (let i=0; i < hosts.length; i++) {
 	var hasRoot = ns.hasRootAccess(hosts[i]);
 	if (!hasRoot) {rooter(ns, hosts[i]);}
-	runScript(ns, hosts[i], 'ezhack.js', 'max');
+	runScript(ns, hosts[i], 'ezhack.js', 'max', false);
+
 }
 }
