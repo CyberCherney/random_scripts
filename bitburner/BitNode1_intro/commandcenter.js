@@ -1,10 +1,11 @@
 /** @param {NS} ns */
 
-import { scan } from "basic.js";
+import { scan, hacknetServers } from "basic.js";
 
 export async function main(ns) {
 	ns.clearLog();
 	ns.disableLog('scp');
+	//ns.tail();
 	var hosts = scan(ns);
 	var rooted = isRooted(hosts, ns);
 	decision(rooted, ns);
@@ -54,20 +55,27 @@ function decision(rooted, ns) {
 	var maxDollars = ns.getServerMaxMoney(topDog);
 	var dollars = ns.getServerMoneyAvailable(topDog);
 	var percentFull = dollars / maxDollars;
-	if (current > min) {
+	if (current > (min + 10)) {
 		var action = 'weaken';
-	} else if (percentFull < .7) {
+	} else if (percentFull < .9) {
 		var action = 'grow';
 	} else {
 		var action = 'hack';
 	}
 
-	// writes then transfers the action and hosts to all rooted hosts
-	ns.write('action.txt', action, 'w');
-	ns.write('host.txt', topDog, 'w');
-
+	// writes then transfers the action and hosts to all rooted hosts in json form
+	const target = {'host': topDog, 'action': action};
+	const json = JSON.stringify(target);
+	ns.print(json);
+	ns.write('target.txt', json, 'w');
+	
 	for (let i = 0; i < rooted.length; i++) {
-		ns.scp('action.txt', rooted[i]);
-		ns.scp('host.txt', rooted[i]);
+		ns.scp('target.txt', rooted[i]);
+	}
+
+	var hacknets = hacknetServers(ns);
+
+	for (let i = 0; i < hacknets.length; i++) {
+		ns.scp('target.txt', hacknets[i]);
 	}
 }

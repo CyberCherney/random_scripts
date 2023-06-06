@@ -6,15 +6,16 @@
 export async function main(ns) {
 	while(true) {
 		
-		if (ns.fileExists('action.txt')) {
-			var action = ns.read('action.txt');
+		if (ns.fileExists('target.txt')) {
+			//ns.tail();
+			const file = ns.read('target.txt');
+			const json = JSON.parse(file);
+			var action = json.action;
+			var host = json.host;
+			//ns.print(json);
+			
 		} else {
 			var action = 'hack';
-		}
-
-		if (ns.fileExists('host.txt')) {
-			var host = ns.read('host.txt');
-		} else {
 			var host = ns.args[0];
 		}
 
