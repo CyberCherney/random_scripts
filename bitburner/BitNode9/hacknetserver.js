@@ -6,15 +6,27 @@ export async function main(ns) {
 		ns.hacknet.purchaseNode();
 		ns.exit();
 	}
+
 	var hashes = ns.hacknet.numHashes();
 	var iter = Math.floor(hashes / 4);
 	for (let i=0; i < iter; i++) {
-		//ns.hacknet.spendHashes("Sell for Money");
-		//ns.hacknet.spendHashes("Improve Studying");
-		ns.hacknet.spendHashes("Reduce Minimum Security", 'megacorp');
+		if (ns.hasRootAccess('megacorp')) {
+			if (ns.getServerMinSecurityLevel('megacorp') > 1) {
+				ns.hacknet.spendHashes("Reduce Minimum Security", 'megacorp');
+			} else if (ns.getServerMaxMoney('megacorp') < 10000000000000) {
+				ns.hacknet.spendHashes("Increase Maximum Money", 'megacorp');
+			} else {
+				ns.hacknet.spendHashes("Improve Studying");
+				//ns.hacknet.spendHashes("Improve Gym Training");
+			}
+		} else {
+			ns.hacknet.spendHashes("Sell for Money");
+		}
 	}
 
-	for (let i=0; i<5; i++) {
+	
+	const loops = 5;
+	for (let i=0; i< loops; i++) {
 		var nodes = ns.hacknet.numNodes();
 		//ns.print(nodes);
 		var nodeCost = ns.hacknet.getPurchaseNodeCost();
