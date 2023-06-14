@@ -7,14 +7,18 @@ export async function main(ns) {
 		ns.exit();
 	}
 
+	var file = ns.read('target.txt');
+	var json = JSON.parse(file);
+	var host = json.endHost;
+	
 	var hashes = ns.hacknet.numHashes();
 	var iter = Math.floor(hashes / 4);
 	for (let i=0; i < iter; i++) {
-		if (ns.hasRootAccess('megacorp')) {
-			if (ns.getServerMinSecurityLevel('megacorp') > 1) {
-				ns.hacknet.spendHashes("Reduce Minimum Security", 'megacorp');
-			} else if (ns.getServerMaxMoney('megacorp') < 10000000000000) {
-				ns.hacknet.spendHashes("Increase Maximum Money", 'megacorp');
+		if (ns.hasRootAccess(host)) {
+			if (ns.getServerMinSecurityLevel(host) > 1) {
+				ns.hacknet.spendHashes("Reduce Minimum Security", host);
+			} else if (ns.getServerMaxMoney(host) < 10000000000000) {
+				ns.hacknet.spendHashes("Increase Maximum Money", host);
 			} else {
 				ns.hacknet.spendHashes("Improve Studying");
 				//ns.hacknet.spendHashes("Improve Gym Training");
@@ -25,7 +29,7 @@ export async function main(ns) {
 	}
 
 	
-	const loops = 5;
+	const loops = 0;
 	for (let i=0; i< loops; i++) {
 		var nodes = ns.hacknet.numNodes();
 		//ns.print(nodes);

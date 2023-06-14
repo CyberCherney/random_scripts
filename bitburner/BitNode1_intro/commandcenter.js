@@ -33,15 +33,22 @@ function decision(rooted, ns) {
 	// after finding it the server is crowned topDog
 	var oldDog = ns.read('host.txt');
 	var lvl = ns.getHackingLevel();
-
+	
+	var highestMax = '';
 	var topDog = '';
 	var dollars = 0;
 	for (let i = 0; i < rooted.length; i++) {
 		var cash = ns.getServerMaxMoney(rooted[i]);
 		var hackingReq = ns.getServerRequiredHackingLevel(rooted[i]);
-		if (cash > dollars && rooted[i] != 'home' && hackingReq < lvl) {
+		if (cash > dollars && rooted[i] != 'home') {
 			dollars = cash;
-			topDog = rooted[i];
+			
+			if (hackingReq < lvl) {
+				topDog = rooted[i];
+			}
+
+			highestMax = rooted[i];
+
 		}
 	}
 	ns.print('Top dog is ' + topDog);
@@ -55,7 +62,7 @@ function decision(rooted, ns) {
 	var maxDollars = ns.getServerMaxMoney(topDog);
 	var dollars = ns.getServerMoneyAvailable(topDog);
 	var percentFull = dollars / maxDollars;
-	if (current > (min + 10)) {
+	if (current > (min + 1)) {
 		var action = 'weaken';
 	} else if (percentFull < .9) {
 		var action = 'grow';
@@ -64,7 +71,7 @@ function decision(rooted, ns) {
 	}
 
 	// writes then transfers the action and hosts to all rooted hosts in json form
-	const target = {'host': topDog, 'action': action};
+	const target = {'host': topDog, 'action': action, 'endHost': highestMax};
 	const json = JSON.stringify(target);
 	ns.print(json);
 	ns.write('target.txt', json, 'w');
