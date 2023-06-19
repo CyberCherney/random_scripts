@@ -28,8 +28,13 @@ export async function main(ns) {
 		}
 	}
 
-	
-	const loops = 0;
+	var sanityCheck = ns.hacknet.getCoreUpgradeCost(0);
+	if (sanityCheck < 300000000000000) {
+		var loops = 5;
+	} else {
+		var loops = 0;
+	}
+
 	for (let i=0; i< loops; i++) {
 		var nodes = ns.hacknet.numNodes();
 		//ns.print(nodes);
