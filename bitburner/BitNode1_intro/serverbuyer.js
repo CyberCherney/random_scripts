@@ -8,16 +8,20 @@
 */
 export async function main(ns) {
 	ns.disableLog('getServerMoneyAvailable');
+	//ns.tail();
+	ns.clearLog();
 	var ramPower = ns.read('ram.txt');
 	ns.print(ramPower);
 	if (ramPower > 20) {
-		ns.write('ram.txt', 'done');
+		ns.write('ram.txt', 'done', 'w');
 	}
-	const basecost = 110000;
+
+	const basecost = 2200000;
 	const owned = ns.getPurchasedServers();
+	const max = ns.getPurchasedServerLimit();
 	const name = 'raccoon-';
 	var x = true;
-	if (owned.length < 25) {
+	if (owned.length < max) {
 		var ram = 2 ** ramPower;
 		for (let i = 0; (i + owned.length) < 25; i++) {
 			var money = ns.getServerMoneyAvailable('home');
@@ -25,8 +29,10 @@ export async function main(ns) {
 				ns.purchaseServer(name + String(i), ram);
 			}
 		}
-	} else if (owned.length == 25) {
-		for (let i = 0; i < owned.length; i++) {
+	} else if (owned.length == max) {
+		var x = 0;
+		var i = 0;
+		for (i = 0; i < owned.length; i++) {
 			var ram = ns.getServerMaxRam(owned[i]); 
 			var money = ns.getServerMoneyAvailable('home');
 			var betterRam = 2 ** ramPower;
@@ -36,15 +42,15 @@ export async function main(ns) {
 				//ns.print(cost);
 				if (money > cost) {
 					ns.kill('grow.js', owned[i], owned[i]);
-					ns.deleteServer(owned[i]);
-					ns.purchaseServer(owned[i], betterRam);
+					ns.upgradePurchasedServer(owned[i], betterRam);
 				}
 			}
 			if (betterRam == ram) {
-				var x = false;
+				x++;
 			}
 		}
-		if (x == false && ramPower < 21) {
+		ns.print('x='+x+' i='+i);
+		if (x == i && ramPower < 21) {
 			ramPower++;
 			ns.write('ram.txt', ramPower, 'w');
 		}
