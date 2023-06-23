@@ -5,10 +5,10 @@ import { scan, hacknetServers } from "basic.js";
 export async function main(ns) {
 	ns.clearLog();
 	ns.disableLog('scp');
-	//ns.tail();
+	ns.tail();
 	var hosts = scan(ns);
 	var rooted = isRooted(hosts, ns);
-	decision(rooted, ns);
+	decision(rooted, hosts, ns);
 }
 
 // checks if the hosts have been rooted
@@ -28,12 +28,11 @@ function isRooted(hosts, ns) {
 
 // makes the decision of which host is to be targetted and to hack or weaken
 // my bought servers are handling the growth spam for the time being
-function decision(rooted, ns) {
+function decision(rooted, hosts, ns) {
 	// this part will find the server with the highest money available
 	// after finding it the server is crowned topDog
-	var oldDog = ns.read('host.txt');
 	var lvl = ns.getHackingLevel();
-	
+
 	var highestMax = '';
 	var topDog = '';
 	var dollars = 0;
@@ -42,16 +41,22 @@ function decision(rooted, ns) {
 		var hackingReq = ns.getServerRequiredHackingLevel(rooted[i]);
 		if (cash > dollars && rooted[i] != 'home') {
 			dollars = cash;
-			
+
 			if (hackingReq < lvl) {
 				topDog = rooted[i];
 			}
-
-			highestMax = rooted[i];
-
 		}
 	}
 	ns.print('Top dog is ' + topDog);
+
+	for (let i = 0; i < hosts.length; i++) {
+		var cash = ns.getServerMaxMoney(hosts[i]);
+		var hackingReq = ns.getServerRequiredHackingLevel(hosts[i]);
+		if (cash > dollars && hosts[i] != 'home') {
+			dollars = cash;
+			var highestMax = hosts[i]
+		}
+	}
 
 
 	// checks an arbitrary percentage threshhold I set of .75
@@ -71,11 +76,11 @@ function decision(rooted, ns) {
 	}
 
 	// writes then transfers the action and hosts to all rooted hosts in json form
-	const target = {'host': topDog, 'action': action, 'endHost': highestMax};
+	const target = { 'host': topDog, 'action': action, 'endHost': highestMax };
 	const json = JSON.stringify(target);
 	ns.print(json);
 	ns.write('target.txt', json, 'w');
-	
+
 	for (let i = 0; i < rooted.length; i++) {
 		ns.scp('target.txt', rooted[i]);
 	}
