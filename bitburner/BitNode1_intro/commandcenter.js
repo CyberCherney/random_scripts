@@ -5,7 +5,7 @@ import { scan, hacknetServers } from "basic.js";
 export async function main(ns) {
 	ns.clearLog();
 	ns.disableLog('scp');
-	ns.tail();
+	//ns.tail();
 	var hosts = scan(ns);
 	var rooted = isRooted(hosts, ns);
 	decision(rooted, hosts, ns);
@@ -90,4 +90,11 @@ function decision(rooted, hosts, ns) {
 	for (let i = 0; i < hacknets.length; i++) {
 		ns.scp('target.txt', hacknets[i]);
 	}
+
+	var ownedServers = ns.getPurchasedServers();
+
+	for (let i = 0; i < ownedServers.length; i++) {
+		ns.scp('target.txt', ownedServers[i]);
+	}
+
 }
