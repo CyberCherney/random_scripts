@@ -67,10 +67,15 @@ export async function main(ns) {
 //ns.tail();
 const hosts = scan(ns);
 const hacknets = hacknetServers(ns);
+const owned = ns.getPurchasedServers();
 for (let i=0; i < hosts.length; i++) {
 	var hasRoot = ns.hasRootAccess(hosts[i]);
 	if (!hasRoot) {rooter(ns, hosts[i]);}
 	runScript(ns, hosts[i], 'ezhack.js', 'max', false);
-
 }
+
+for (let i=0; i < owned.length; i++) {
+	runScript(ns, owned[i], 'grow.js', 'max', false);
+}
+
 }
