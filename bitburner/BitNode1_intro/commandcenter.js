@@ -4,7 +4,7 @@
 import { scan, hacknetServers } from "basic.js";
 
 // MANUAL OVERRIDE TOGGLE
-//const OVERRIDE = true;
+const OVERRIDE = true;
 
 export async function main(ns) {
 
@@ -72,6 +72,9 @@ function decision(rooted, hosts, ns) {
 	}
 	ns.print('Top dog is ' + topDog);
 
+	if (typeof OVERRIDE != 'undefined') {
+		topDog = 'silver-helix';
+	}
 
 	// loops through all hosts and finds the highest cash value from any of them
 	// outputs the highestMax variable
