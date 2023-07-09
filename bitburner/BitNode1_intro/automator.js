@@ -19,9 +19,12 @@ export async function main(ns) {
 		await ns.run('hacknetserver.js');
 		await ns.asleep(10000);
 		if (ns.read('ram.txt') != 'done') {
-			//await ns.run('serverbuyer.js')
+			await ns.run('serverbuyer.js')
 			//await ns.asleep(50000);
-			//await ns.run('oldhacknet.js'); outdated
+		}
+
+		if (!ns.isRunning('homehack.js', 'home')) {
+			ns.run('homeenum.js');
 		}
 	}
 }
