@@ -12,6 +12,7 @@ export async function main(ns) {
 	ns.clearLog();
 	ns.disableLog('scp');
 	ns.disableLog('getServerRequiredHackingLevel')
+	ns.disableLog('getServerMaxMoney');
 	//ns.tail();
 
 
@@ -61,6 +62,7 @@ function decision(rooted, hosts, ns) {
 	// then placed as the variable topDog
 	for (let i = 0; i < rooted.length; i++) {
 		var cash = ns.getServerMaxMoney(rooted[i]);
+		//ns.print(rooted[i] + ' ' + cash + ' ' + dollars);
 		var hackingReq = ns.getServerRequiredHackingLevel(rooted[i]);
 		if (cash > dollars && rooted[i] != 'home') {
 			dollars = cash;
@@ -72,18 +74,18 @@ function decision(rooted, hosts, ns) {
 	}
 	ns.print('Top dog is ' + topDog);
 
-	if (typeof OVERRIDE != 'undefined') {
-		topDog = 'silver-helix';
-	}
-
 	// loops through all hosts and finds the highest cash value from any of them
 	// outputs the highestMax variable
+	
+	dollars = 0;
+	
 	for (let i = 0; i < hosts.length; i++) {
 		var cash = ns.getServerMaxMoney(hosts[i]);
 		var hackingReq = ns.getServerRequiredHackingLevel(hosts[i]);
 		if (cash > dollars && hosts[i] != 'home') {
 			dollars = cash;
 			var highestMax = hosts[i]
+			ns.print(highestMax);
 		}
 	}
 
@@ -104,6 +106,12 @@ function decision(rooted, hosts, ns) {
 		var action = 'hack';
 	}
 
+
+	if (typeof OVERRIDE != 'undefined') {
+		ns.print('OVERRIDE ACTIVATE');
+		//topDog = 'catalyst';
+		action = 'weaken';
+	}
 
 	// writes then transfers the action and hosts to all rooted hosts in json form
 	const target = { 'host': topDog, 'action': action, 'endHost': highestMax };
