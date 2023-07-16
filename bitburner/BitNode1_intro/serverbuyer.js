@@ -6,6 +6,9 @@
  * runs a final check to see if any server is below the imported ram value
  * if no server is lower than ram.txt it increments it by one
 */
+
+var costLimit = 2000000000;
+
 export async function main(ns) {
 	ns.disableLog('getServerMoneyAvailable');
 	//ns.tail();
@@ -16,7 +19,7 @@ export async function main(ns) {
 		ns.write('ram.txt', 'done', 'w');
 	}
 
-	const basecost = 2200000;
+	const basecost = 110000;
 	const owned = ns.getPurchasedServers();
 	const max = ns.getPurchasedServerLimit();
 	const name = 'raccoon-';
@@ -34,13 +37,15 @@ export async function main(ns) {
 		var i = 0;
 		for (i = 0; i < owned.length; i++) {
 			var ram = ns.getServerMaxRam(owned[i]); 
-			var money = ns.getServerMoneyAvailable('home');
+
 			var betterRam = 2 ** ramPower;
 			ns.print(betterRam);
 			if (betterRam > ram && ramPower < 21) {
-				var cost = basecost * betterRam /2;
+				var cost = ns.getPurchasedServerCost(betterRam);
+				var money = ns.getServerMoneyAvailable('home');
+				ns.print('Money: ' + money + '   Cost: ' + cost);
 				//ns.print(cost);
-				if (money > cost) {
+				if (money > cost && cost < costLimit) {
 					ns.kill('grow.js', owned[i], owned[i]);
 					ns.upgradePurchasedServer(owned[i], betterRam);
 				}
