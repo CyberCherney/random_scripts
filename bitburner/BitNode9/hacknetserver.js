@@ -8,6 +8,7 @@ export async function main(ns) {
 
 	// debugging toggles
 	ns.clearLog();
+	ns.disableLog("getServerMinSecurityLevel");
 	//ns.tail();
 
 
@@ -23,14 +24,18 @@ export async function main(ns) {
 	// if OVERRIDE is on uses host in variable 
 	// otherwise reads target json file and defines the host variable
 	if (typeof OVERRIDE != 'undefined') {
-		var host = 'catalyst';
-		var securitySwitch = 1;
+		var host = 'omega-net';
+		var securitySwitch = 6.7;
 	} else {
 		var file = ns.read('target.txt');
 		var json = JSON.parse(file);
 		var host = json.endHost;
-		ns.print(host);
+		//ns.print(host);
 		var securitySwitch = 1;
+		var root = ns.hasRootAccess(host);
+		var hackLvlReq = ns.getServerRequiredHackingLevel(host);
+		var hackLvl = ns.getHackingLevel();
+		//ns.print(root)
 	}
 
 
@@ -41,16 +46,17 @@ export async function main(ns) {
 	var hashes = ns.hacknet.numHashes();
 	var iter = Math.floor(hashes / 4);
 	for (let i=0; i < iter; i++) {
-		if (ns.hasRootAccess(host)) {
+		if (hackLvl >= hackLvlReq && root) {
 			if (ns.getServerMinSecurityLevel(host) > securitySwitch) {
 				ns.hacknet.spendHashes("Reduce Minimum Security", host);
 			} else if (ns.getServerMaxMoney(host) < 10000000000000) {
 				ns.hacknet.spendHashes("Increase Maximum Money", host);
 			} else {
-				//ns.hacknet.spendHashes("Improve Studying");
-				ns.hacknet.spendHashes("Improve Gym Training");
+				ns.hacknet.spendHashes("Improve Studying");
+				//ns.hacknet.spendHashes("Improve Gym Training");
 			}
 		} else {
+			//ns.hacknet.spendHashes("Improve Studying");
 			ns.hacknet.spendHashes("Sell for Money");
 		}
 	}
@@ -58,12 +64,14 @@ export async function main(ns) {
 
 	// hard coded stop so saving for augments later is easy
 	var sanityCheck = ns.hacknet.getCoreUpgradeCost(0);
+	var costLimit = 100000000;
 	if (typeof ns.args[0] != 'undefined') {
 		var loops = ns.args[0];
-	} else if (sanityCheck < 200000000000) {
+	} else if (sanityCheck < costLimit) {
 		var upgradeCost = ns.hacknet.getLevelUpgradeCost(0);
 		var homeMoney = ns.getServerMoneyAvailable('home');
 		var loops = Math.floor(homeMoney/upgradeCost);
+		//ns.print(loops);
 	} else {
 		var loops = 0;
 	}
