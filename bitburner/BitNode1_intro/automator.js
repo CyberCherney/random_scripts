@@ -26,5 +26,10 @@ export async function main(ns) {
 		if (!ns.isRunning('homehack.js', 'home')) {
 			ns.run('homeenum.js');
 		}
+
+		if (ns.bladeburner.inBladeburner()) {
+			//ns.run('bladeburner.js')
+		}
+
 	}
 }
