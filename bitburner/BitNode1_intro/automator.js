@@ -31,5 +31,8 @@ export async function main(ns) {
 			//ns.run('bladeburner.js')
 		}
 
+		if (!ns.fileExists("DeepscanV2.exe", "home")) {
+			ns.run('scriptbuyer.js')
+		}
 	}
 }
