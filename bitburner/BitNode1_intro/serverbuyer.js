@@ -7,17 +7,18 @@
  * if no server is lower than ram.txt it increments it by one
 */
 
-var costLimit = 2000000000;
+var costLimit = 1000000000;
 
 export async function main(ns) {
 	ns.disableLog('getServerMoneyAvailable');
 	//ns.tail();
 	ns.clearLog();
-	var ramPower = ns.read('ram.txt');
+	var fileIn = ns.read('target.txt');
+	var json = JSON.parse(fileIn);
+	var ramPower = json.ramPower;
 	ns.print(ramPower);
-	if (ramPower > 20) {
-		ns.write('ram.txt', 'done', 'w');
-	}
+
+
 
 	const basecost = 110000;
 	const owned = ns.getPurchasedServers();
@@ -39,11 +40,11 @@ export async function main(ns) {
 			var ram = ns.getServerMaxRam(owned[i]); 
 
 			var betterRam = 2 ** ramPower;
-			ns.print(betterRam);
+			//ns.print(betterRam);
 			if (betterRam > ram && ramPower < 21) {
 				var cost = ns.getPurchasedServerCost(betterRam);
 				var money = ns.getServerMoneyAvailable('home');
-				ns.print('Money: ' + money + '   Cost: ' + cost);
+				//ns.print('Money: ' + money + '   Cost: ' + cost);
 				//ns.print(cost);
 				if (money > cost && cost < costLimit) {
 					ns.kill('grow.js', owned[i], owned[i]);
@@ -57,7 +58,14 @@ export async function main(ns) {
 		ns.print('x='+x+' i='+i);
 		if (x == i && ramPower < 21) {
 			ramPower++;
-			ns.write('ram.txt', ramPower, 'w');
+			json.ramPower = ramPower;
+			var fileOut = JSON.stringify(json);
+			ns.write('target.txt', fileOut, 'w');
+
+		} else if (ramPower == '21') {
+			json.ramPower = 'done';
+			var fileOut = JSON.stringify(json);
+			ns.write('target.txt', fileOut, 'w');
 		}
 	}
 
