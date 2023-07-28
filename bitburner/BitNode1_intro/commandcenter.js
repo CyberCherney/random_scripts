@@ -4,7 +4,7 @@
 import { scan, hacknetServers } from "basic.js";
 
 // MANUAL OVERRIDE TOGGLE
-const OVERRIDE = true;
+//const OVERRIDE = true;
 
 export async function main(ns) {
 
@@ -109,15 +109,19 @@ function decision(rooted, hosts, ns) {
 
 	if (typeof OVERRIDE != 'undefined') {
 		ns.print('OVERRIDE ACTIVATE');
-		//topDog = 'catalyst';
+		topDog = 'omega-net';
 		action = 'weaken';
 	}
 
 	// writes then transfers the action and hosts to all rooted hosts in json form
-	const target = { 'host': topDog, 'action': action, 'endHost': highestMax };
-	const json = JSON.stringify(target);
-	ns.print(json);
-	ns.write('target.txt', json, 'w');
+	const fileIn = ns.read('target.txt')
+	var json = JSON.parse(fileIn)
+	json.host = topDog
+	json.action = action
+	json.endHost = highestMax
+	const fileOut = JSON.stringify(json);
+	ns.print(fileOut);
+	ns.write('target.txt', fileOut, 'w');
 
 	for (let i = 0; i < rooted.length; i++) {
 		ns.scp('target.txt', rooted[i]);
