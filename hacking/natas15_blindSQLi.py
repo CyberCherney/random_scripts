@@ -3,9 +3,6 @@
 
 import requests
 import re
-import urllib.parse
-import base64
-import sys
 
 
 url = "http://natas15.natas.labs.overthewire.org"
