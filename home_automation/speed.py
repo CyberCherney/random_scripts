@@ -8,7 +8,7 @@ from pytz import timezone
 st = speedtest.Speedtest()
 st.get_best_server()
 x = datetime.datetime.now(timezone("America/Chicago"))
-stamp = x.strftime("%x %X")
+stamp = x.strftime("%Y-%m-%d %H:%M:%S")
 
 def speedtest():
     latency = st.results.ping

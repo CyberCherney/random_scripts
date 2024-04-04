@@ -10,7 +10,7 @@ temperature='z'
 humidity='z'
 
 x=datetime.datetime.now(timezone('America/Chicago'))
-stamp = x.strftime("%x %X")
+stamp = x.strftime("%Y-%m-%d %H:%M:%S")
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
