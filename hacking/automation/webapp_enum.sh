@@ -5,6 +5,11 @@
 #
 # some of the above tools recommend using go get, instead use the following command format:
 # go install github.com/haccer/subjack@latest
+#
+# TODO:
+#	Add tool auto install portion
+#	Add fail for not adding a proper url
+#	Modify tools to be used by kali and parrot
 
 
 url=$1
