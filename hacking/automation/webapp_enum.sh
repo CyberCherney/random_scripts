@@ -7,12 +7,55 @@
 # go install github.com/haccer/subjack@latest
 #
 # TODO:
-#	Add tool auto install portion
+#	--Add tool auto install portion
 #	Add fail for not adding a proper url
-#	Modify tools to be used by kali and parrot
+#	--Modify tools to be used by kali and parrot
 
 
-url=$1
+
+
+# handles checks and installation of tools + initialization
+function install_check () {
+
+echo "Checking if tools are installed"
+
+if  ! whereis go | grep -q "/go";then
+	echo "Please install go before running this script"
+	exit 1
+fi
+
+# urls for installs
+url_assetfinder="github.com/tomnomnom/assetfinder@latest"
+url_amass="github.com/owasp-amass/amass/v4/...@master"
+url_httprobe="github.com/tomnomnom/httprobe@latest"
+url_gowitness="github.com/sensepost/gowitness@latest"
+url_subjack="github.com/haccer/subjack@latest"
+url_waybackurls="github.com/tomnomnom/waybackurls@latest"
+
+tools=("assetfinder" "amass" "httprobe" "gowitness" "subjack" "waybackurls")
+
+# install check then install
+for str in ${tools[@]}; do
+	if whereis $str | grep -q go;then
+		printf "\xE2\x9C\x94 $str\n"
+	else
+		echo "$str not installed."
+		tmp=`echo "url_$str"`
+		go install $tmp
+	fi
+done
+
+}
+
+
+function main () {
+
+if $1; then
+	url=$1
+else
+	read -p "Enter the url: " url
+fi
+
 base=("$url" "$url/recon")
 
 for dir in "${base[@]}"; do
@@ -111,4 +154,10 @@ gowitness file -f $root/final.txt
 mv screenshots $root/gowitness
 mv gowitness.sqlite3 $root/gowitness
 
+}
+
+
+
+install_check
+main
 
