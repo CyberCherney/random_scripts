@@ -10,6 +10,7 @@
 #	--Add tool auto install portion
 #	Add fail for not adding a proper url
 #	--Modify tools to be used by kali and parrot
+#	fix functionality in totality
 
 
 
@@ -34,23 +35,35 @@ url_waybackurls="github.com/tomnomnom/waybackurls@latest"
 
 tools=("assetfinder" "amass" "httprobe" "gowitness" "subjack" "waybackurls")
 
+start=`pwd`
+cd ~
+pwd
+
 # install check then install
 for str in ${tools[@]}; do
-	if whereis $str | grep -q go;then
+	if whereis $str | grep -q "go/";then
 		printf "\xE2\x9C\x94 $str\n"
 	else
 		echo "$str not installed."
 		tmp=`echo "url_$str"`
-		go install $tmp
+		url="${!tmp}"
+		go install $url
+		sudo cp go/bin/$str /usr/local/go/bin/
 	fi
 done
+
+cd $start
+
+# adds to path
+export PATH="$PATH:/usr/local/go/bin"
+source ~/.bashrc
 
 }
 
 
 function main () {
 
-if $1; then
+if [ "$#" gt 0 ]; then
 	url=$1
 else
 	read -p "Enter the url: " url
