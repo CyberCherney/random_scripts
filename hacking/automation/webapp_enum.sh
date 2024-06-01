@@ -1,5 +1,6 @@
 #!/bin/bash
 # simple subdomain scanner, filtering, and screenshotting script
+# this tool is more useful during a pentest and a hacking challenge or bug bounty
 # tools needed for this script:
 # assetfinder, amass*, httprobe, gowitness, google chrome in $PATH, subjack, waybackurls
 #
@@ -34,6 +35,7 @@ url_subjack="github.com/haccer/subjack@latest"
 url_waybackurls="github.com/tomnomnom/waybackurls@latest"
 
 tools=("assetfinder" "amass" "httprobe" "gowitness" "subjack" "waybackurls")
+installed=0
 
 start=`pwd`
 cd ~
@@ -49,14 +51,17 @@ for str in ${tools[@]}; do
 		url="${!tmp}"
 		go install $url
 		sudo cp go/bin/$str /usr/local/go/bin/
+		installed++
 	fi
 done
 
 cd $start
 
-# adds to path
-export PATH="$PATH:/usr/local/go/bin"
-source ~/.bashrc
+if [ $installed gt 0 ]; do
+	# adds to path
+	export PATH="$PATH:/usr/local/go/bin"
+	source ~/.bashrc
+fi
 
 }
 
