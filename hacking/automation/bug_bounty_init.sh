@@ -10,11 +10,12 @@
 # 
 # 
 # TODO
-#   fix install enumall
+
 #   add eyewitness, zaproxy, gitrob
+#   add httprobe install/usage
 #   add knockpy and enumall scans
 #   add scope filterer
-#   add Eyewitness (of scoped domains)
+#   add gowitness (of scoped domains)
 #   add ZAP proxy start
 #   add nmap scan (of scoped IPs)
 #   add GitRob running
@@ -25,7 +26,7 @@
 function tool_check() {
 
 uninstalled=()
-tools=("knockpy" "enumall" "EyeWitness" "zaproxy" "gitrob")
+tools=("knockpy" "assetfinder" "httprobe" "gowitness" "zaproxy" "gitrob")
 
 for tool in ${tools[*]}; do
     check=`whereis $tool | sed "s/$tool://g"`
@@ -57,38 +58,55 @@ fi
 echo "[-] Some tools are missing please hold."
 uninstalled=`echo $uninstalled | sed 's/,/ /g'`
 
+if  ! whereis go | grep -q "/go";then
+	echo "[!] Please install go before running this script"
+    echo "https://go.dev/doc/install"
+	exit 1
+fi
+
 for tool in $uninstalled; do
     case $tool in
         knockpy)
             echo "==> Installing knockpy with pip"
             pip install git+https://github.com/guelfoweb/knock.git -q --user
             ;;
-        enumall)
-            echo "==> Installing enumall.py & dependencies"
-            path="/home/$USER/.local/git"
-            mkdir $path
-            loopback=`pwd`
-            cd $path
-            git clone -q https://github.com/methos2016/recon-ng.git
-            pip install -r recon-ng/REQUIREMENTS
-            git clone -q https://github.com/infosec-au/altdns.git
-            git clone -q https://github.com/jhaddix/domain.git
-            cd domain
-            pathSed=$(echo $path | sed s/'\/'/'\\\/'/g)
-            sed -i "s/\/usr\/share\/recon-ng\//$pathSed\/recon-ng\//g" enumall.py
-            sed -i "s/\/root\/Desktop\/altdns-master\//$pathSed\/altdns\//g" enumall.py
-            chmod 755 enumall.py
-            cp enumall.py ~/.local/bin/enumall
-            cd $loopback
+        assetfinder)
+            echo "==> Installing assetfinder"
+            go get github.com/tomnomnom/assetfinder@latest
             ;;
-        EyeWitness)
-            echo "==> Installing EyeWitness.py"
+        httprobe)
+            echo "==> Installing httprobe"
+            go get github.com/tomnomnom/httprobe@latest
+            ;;
+        gowitness)
+            echo "==> Installing gowitness"
+            go get github.com/sensepost/gowitness@latest
             ;;
         zaproxy)
             echo "==> Installing zaproxy"
+            sudo apt install default-jre
+            loopback=`pwd`
+            cd /home/$USER/Downloads
+            wget https://github.com/zaproxy/zaproxy/releases/download/v2.15.0/ZAP_2_15_0_unix.sh
+            echo "==> Follow Installer"
+            sudo bash ZAP_2_15_0_unix.sh
+            wait
+            rm ZAP_2_15_0_unix.sh
+            cd $loopback
             ;;
         gitrob)
             echo "==> Installing Gitrob"
+            loopback=`pwd`
+            cd /home/$USER/Downloads
+            mkdir gitrob
+            cd gitrob
+            wget https://github.com/michenriksen/gitrob/releases/download/v2.0.0-beta/gitrob_linux_amd64_2.0.0-beta.zip
+            unzip gitrob_linux_amd64_2.0.0-beta.zip
+            mv gitrob /home/$USER/go/bin/
+            rm README.md
+            rm rm gitrob_linux_amd64_2.0.0-beta.zip
+            cd $loopback
+            rmdir /home/$USER/Downloads/gitrob
             ;;
     esac
 done
@@ -108,11 +126,21 @@ echo sub
 
 function main() {
 
-read -p "Enter the domain name: " program
+check=tool_check
+
+if [[ $check != '' ]]; then
+    echo "[!] Some tools missing, run -i for auto install"
+    
+    read -p ""
+    exit 1
+fi
+
+
+read -p "[?] Enter the domain name: " program
 mkdir $program
 touch $program/in.scope $program/out.scope
 
-read -p "Place scope items in the $program directory's respective files. Press enter when done."
+read -p "[?] Place scope items in the $program directory's respective files. Press enter when done."
 
 
 
