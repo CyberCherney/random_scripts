@@ -39,7 +39,6 @@ installed=0
 
 start=`pwd`
 cd ~
-pwd
 
 # install check then install
 for str in ${tools[@]}; do
@@ -57,7 +56,7 @@ done
 
 cd $start
 
-if [ $installed gt 0 ]; do
+if [[ $installed -gt 0 ]]; then
 	# adds to path
 	export PATH="$PATH:/usr/local/go/bin"
 	source ~/.bashrc
@@ -105,15 +104,15 @@ assetfinder $url >> $root/assets.txt
 cat $root/assets.txt | sort -u | grep $1 >> $root/final.txt
 rm $root/assets.txt
 
-: '
+
 echo "[+] Finding subdomains with amass"
 amass enum -d $url >> $root/f.txt
 sort -u $root/f.txt >> $root/final.txt
 rm $root/f.txt
-'
+
 
 echo "[+] Probing for live endpoints with httprobe"
-cat $root/final.txt | sort -u | httprobe -s -p https:443 | sed 's/https\?:\/\///' | tr -d ':443' >> $root/httprobe/a.txt
+cat $root/final.txt | sort -u | httprobe -p https:443 | sed 's/https\?:\/\///' | tr -d ':443' >> $root/httprobe/a.txt
 sort -u $root/httprobe/a.txt > $root/httprobe/alive.txt
 rm $root/httprobe/a.txt
 
