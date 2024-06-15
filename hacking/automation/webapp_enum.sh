@@ -67,7 +67,7 @@ fi
 
 function main () {
 
-if [ "$#" gt 0 ]; then
+if [ "$#" -gt 0 ]; then
 	url=$1
 else
 	read -p "Enter the url: " url
@@ -101,15 +101,15 @@ fi
 
 echo "[+] Finding subdomains with assetfinder"
 assetfinder $url >> $root/assets.txt
-cat $root/assets.txt | sort -u | grep $1 >> $root/final.txt
+cat $root/assets.txt | sort -u | uniq >> $root/final.txt
 rm $root/assets.txt
 
-
+: '
 echo "[+] Finding subdomains with amass"
 amass enum -d $url >> $root/f.txt
 sort -u $root/f.txt >> $root/final.txt
 rm $root/f.txt
-
+'
 
 echo "[+] Probing for live endpoints with httprobe"
 cat $root/final.txt | sort -u | httprobe -p https:443 | sed 's/https\?:\/\///' | tr -d ':443' >> $root/httprobe/a.txt
