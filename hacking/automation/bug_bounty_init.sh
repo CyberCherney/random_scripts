@@ -123,18 +123,16 @@ echo sub
 }
 
 
-
 function main() {
 
-check=tool_check
+check=tool_check | sed 's/,/ /g'
 
 if [[ $check != '' ]]; then
-    echo "[!] Some tools missing, run -i for auto install"
-    
-    read -p ""
+    echo "[!] The following tools are missing:"
+    echo $check
+    echo "[!] To auto install run the -i flag"
     exit 1
 fi
-
 
 read -p "[?] Enter the domain name: " program
 mkdir $program

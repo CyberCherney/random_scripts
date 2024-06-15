@@ -124,12 +124,16 @@ fi
 
 subjack -w $root/final.txt -t 100 -timeout 30 -ssl -c ~/go/pkg/mod/github.com/haccer/subjack@v0.0.0-20201112041112-49c51e57deab/fingerprints.json -v 3 -o $root/potential_takeovers/potential_takeovers.txt
 
+: '
 echo "[+] Scanning for ports with nmap"
 nmap -iL $root/httprobe/alive.txt -T4 -oA $root/scans/scanned.txt
+'
 
+: '
 echo "[+] Scraping the wayback with waybackurls"
 cat $root/final.txt | waybackurls >> $root/wayback/wayback_output.txt
 sort -u $root/wayback/wayback_output.txt
+
 
 echo "[+] Compiling extentions "
 cat $root/wayback/wayback_output.txt | grep '?*=' | cut -d '=' -f 1 | sort -u >> $root/wayback/params/wayback_params.txt
@@ -165,6 +169,7 @@ rm $root/wayback/extensions/jsp1.txt
 rm $root/wayback/extensions/json1.txt
 rm $root/wayback/extensions/php1.txt
 rm $root/wayback/extensions/aspx1.txt
+'
 
 echo "[+] Screencapping compiled domains with gowitness"
 gowitness file -f $root/final.txt
