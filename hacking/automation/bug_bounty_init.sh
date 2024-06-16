@@ -1,7 +1,5 @@
 #!/bin/bash
 # USAGE: 
-# please don't run as root unless you plan to use the tools as root
-# it deals with installing pip and go packages and being a different user messes it up
 #
 # auto script for the way I perform bug bounties
 # scans and enums subdomains then filters based off scope
@@ -10,11 +8,8 @@
 # 
 # 
 # TODO
-
-#   add eyewitness, zaproxy, gitrob
-#   add httprobe install/usage
-#   add knockpy and enumall scans
-#   add scope filterer
+#   add httprobe usage
+#   add scope filterer (including IPs)
 #   add gowitness (of scoped domains)
 #   add ZAP proxy start
 #   add nmap scan (of scoped IPs)
@@ -114,13 +109,62 @@ done
 }
 
 
-# uses knockpy and enumall to scan subdomains
-# adds to file sub.domains for filtering
-function subdomain_scan() {
+# makes directories
+function init() {
 
-echo sub
+domain=$1
+
+# set up files and directories for check loop
+directories=("$domain" "$domain/recon" "$domain/recon/domains" "$domain/recon/httprobe" "$domain/recon/gowitness" "$domain/recon/nmap")
+files=("$domain/in.scope" "$domain/out.scope" "$domain/recon/domains/assetfinder.domains" "$domain/recon/domains/knockpy.domains" "$domain/recon/httprobe/alive.domains" "$domain/recon/tmp.domains" "$domain/recon/allowed.inscope" "$domain/recon/nmap/tmp.ips" "$domain/recon/nmap/ip.inscope")
+
+for dir in "${directories[@]}"; do
+    if [ ! -d "$dir" ]; then
+        mkdir $dir
+    fi 
+done
+
+for file in "${files[@]}"; do
+    if [ ! -f "$file" ]; then
+        touch $file
+    fi 
+done
+
 
 }
+
+
+# uses knockpy and assetfinder to scan domains
+# adds to tmp.domains for filtering
+function domain_scan() {
+
+for asset in $domain/in.scope; do
+    assetfinder $asset >> $domain/recon/domains/assetfinder.domains
+done
+
+knockpy -f $domain/recon/domains/assetfinder.domains > $domain/recon/domains/knockpy.domains
+
+scope_filter
+
+}
+
+
+
+function scope_filter() {
+
+    for line in $domain/out.scope; do
+        if [ echo $line | grep -e "^*" ]; then
+            sed "/${line:1}$/d" $domain/recon/tmp.domains
+        elif
+
+        else
+
+        fi
+    done
+
+    cat $domain/recon/tmp.domains | grep -iFf $domain/in.scope | sort -u >> $domain/recon/allowed.inscope
+}
+
 
 
 function main() {
@@ -135,11 +179,10 @@ if [[ $check != '' ]]; then
 fi
 
 read -p "[?] Enter the domain name: " program
-mkdir $program
-touch $program/in.scope $program/out.scope
-
+init $program
 read -p "[?] Place scope items in the $program directory's respective files. Press enter when done."
 
+domain_scan
 
 
 }
