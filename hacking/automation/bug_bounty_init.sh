@@ -8,9 +8,7 @@
 # 
 # 
 # TODO
-#   add httprobe usage
 #   add IP scope filterer
-#   add gowitness (of scoped domains)
 #   add ZAP proxy start
 #   add nmap scan (of scoped IPs)
 #   add GitRob running
@@ -118,7 +116,7 @@ function init() {
 
     # set up files and directories for check loop
     directories=("$domain" "$domain/recon" "$domain/recon/domains" "$domain/recon/httprobe" "$domain/recon/gowitness" "$domain/recon/nmap")
-    files=("$domain/in.scope" "$domain/out.scope" "$domain/recon/domains/assetfinder.domains" "$domain/recon/domains/knockpy.domains" "$domain/recon/httprobe/alive.domains" "$domain/recon/tmp.domains" "$domain/recon/allowed.inscope" "$domain/recon/nmap/tmp.ips" "$domain/recon/nmap/ip.inscope")
+    files=("$domain/in.scope" "$domain/out.scope" "$domain/recon/domains/assetfinder.domains" "$domain/recon/domains/knockpy.domains" "$domain/recon/httprobe/alive.domains" "$domain/recon/tmp.domains" "$domain/allowed.inscope" "$domain/recon/nmap/tmp.ips" "$domain/recon/nmap/ip.inscope" "$domain/recon/httprobe/tmp.alive")
 
     for dir in "${directories[@]}"; do
         if [ ! -d "$dir" ]; then
@@ -144,35 +142,38 @@ function scope_filter() {
 
     echo "[+] Removing out of scope objects."
     while read -r line || [[ -n $line ]]; do
+        prep=`echo $line | sed 's/\./\\\./g'`
         if [[ `echo $line | grep -e "^*" | grep -e "*$"` != '' ]]; then
             # handles *.domain.*
-            sed "/${line:1:-1}/d" $domain/recon/tmp.domains
+            sed -i "/${prep:1:-1}/d" $domain/recon/tmp.domains
         elif [[ `echo $line | grep -e "^*"` != '' ]]; then
             # handles *.domain
-            sed "/${line:1}$/d" $domain/recon/tmp.domains
+            sed -i "/${prep:1}$/d" $domain/recon/tmp.domains
         elif [[ `echo $line | grep -e "*$"` != '' ]]; then
             # handles domain.*
-            sed "/^${line::-1}/d" $domain/recon/tmp.domains
+            sed -i "/^${prep::-1}/d" $domain/recon/tmp.domains
         else
             # end case is likely domain.com
-            sed "/^$line$/d" $domain/recon/tmp.domains
+            sed -i "/^$prep$/d" $domain/recon/tmp.domains
+            sed -i "/\.$prep$/d" $domain/recon/tmp.domains
         fi
     done < "$domain/out.scope"
 
     echo "[+] Adding in scope items."
     while read line || [[ -n $line ]]; do
+        prep=`echo $line | sed 's/\./\\\./g'`
         if [[ `echo $line | grep -e "^*" | grep -e "*$"` != '' ]]; then
             # handles *.domain.*
-            cat $domain/recon/tmp.domains | grep -e "${line:1:-1}" > $domain/recon/allowed.inscope
+            cat $domain/recon/tmp.domains | grep -e "${prep:1:-1}" > $domain/allowed.inscope
         elif [[ `echo $line | grep -e "^*"` != '' ]]; then
             # handles *.domain
-            cat $domain/recon/tmp.domains | grep -e "${line:1}$" > $domain/recon/allowed.inscope
+            cat $domain/recon/tmp.domains | grep -e "${prep:1}$" > $domain/allowed.inscope
         elif [[ `echo $line | grep -e "*$"` != '' ]]; then
             # handles domain.*
-            cat $domain/recon/tmp.domains | grep -e "^${line::-1}" > $domain/recon/allowed.inscope
+            cat $domain/recon/tmp.domains | grep -e "^${prep::-1}" > $domain/allowed.inscope
         else
             # end case is likely domain.com
-            cat $domain/recon/tmp.domains | grep -e "^$line$" > $domain/recon/allowed.inscope
+            cat $domain/recon/tmp.domains | grep -e "^$prep$" > $domain/allowed.inscope
         fi
     done < "$domain/in.scope"
 
@@ -184,7 +185,7 @@ function scope_filter() {
 function domain_scan() {
 
     echo "[+] Scanning with assetfinder."
-    
+   
     while IFS= read -r line || [[ -n $line ]]; do
         if [[ `echo $line | grep -e "^*"` != '' ]]; then
             wildcard_asset=${line:2}
@@ -193,17 +194,32 @@ function domain_scan() {
             assetfinder $line >> $1/recon/domains/assetfinder.domains
         fi
     done < "$1/in.scope"
-
+    
     cat $1/recon/domains/assetfinder.domains | sort -u > $1/recon/tmp.domains
 
     echo "[+] Fetching IPs and additional info with knockpy."
-
     knockpy -f $1/recon/tmp.domains > $1/recon/domains/knockpy.domains
     
     scope_filter $1
 
 }
 
+
+# probes for alive domains then screenshots
+function screen_cap() {
+
+    domain=$1
+
+    echo "[+] Probing for alive domains."
+    cat $1/recon/allowed.inscope | sort-u | httprobe -p https:443 | sed 's/https\?:\/\///' | tr -d ':443' >> $domain/recon/httprobe/tmp.alive
+    sort -u $domain/recon/httprobe/tmp.alive > $domain/recon/httprobe/alive.domains
+
+    echo "[+] Taking screenshots of alive domains."
+    gowitness file -f $domain/allowed.inscope
+    mv screenshots $domain/recon/gowitness
+    mv gowitness.sqlite3 $domain/recon/gowitness
+
+}
 
 
 function main() {
@@ -222,7 +238,7 @@ function main() {
     read -p "[?] Place scope items in the $program directory's respective files. Press enter when done."
 
     domain_scan $program
-
+    screen_cap $program
 
 }
 
