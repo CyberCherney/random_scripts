@@ -8,8 +8,9 @@
 # 
 # 
 # TODO
+#   fix domain scope filter
 #   add httprobe usage
-#   add scope filterer (including IPs)
+#   add IP scope filterer
 #   add gowitness (of scoped domains)
 #   add ZAP proxy start
 #   add nmap scan (of scoped IPs)
@@ -112,6 +113,8 @@ done
 # makes directories
 function init() {
 
+echo "[+] Initializing directories and files."
+
 domain=$1
 
 # set up files and directories for check loop
@@ -130,6 +133,47 @@ for file in "${files[@]}"; do
     fi 
 done
 
+}
+
+
+# takes in.scope and out.scope and filters allowed domains and IPs
+function scope_filter() {
+
+    domain=$1
+
+    echo "[+] Filtering found assets with defined scope."
+
+    while IFS= read -r line; do
+        if [[ `echo $line | grep -e "^*" | grep -e "*$"` != '' ]]; then
+            # handles *.domain.*
+            sed "/${line:1:-1}/d" $domain/recon/tmp.domains
+        elif [[ `echo $line | grep -e "^*"` != '' ]]; then
+            # handles *.domain
+            sed "/${line:1}$/d" $domain/recon/tmp.domains
+        elif [[ `echo $line | grep -e "*$"` != '' ]]; then
+            # handles domain.*
+            sed "/^${line::-1}/d" $domain/recon/tmp.domains
+        else
+            # end case is likely domain.com
+            sed "/^$line$/d" $domain/recon/tmp.domains
+        fi
+    done < "$domain/out.scope"
+
+    while IFS= read -r line; do
+        if [[ `echo $line | grep -e "^*" | grep -e "*$"` != '' ]]; then
+            # handles *.domain.*
+            cat $domain/recon/tmp.domains | grep -e "${line:1:-1}" > $domain/recon/allowed.inscope
+        elif [[ `echo $line | grep -e "^*"` != '' ]]; then
+            # handles *.domain
+            cat $domain/recon/tmp.domains | grep -e "${line:1}$" > $domain/recon/allowed.inscope
+        elif [[ `echo $line | grep -e "*$"` != '' ]]; then
+            # handles domain.*
+            cat $domain/recon/tmp.domains | grep -e "^${line::-1}" > $domain/recon/allowed.inscope
+        else
+            # end case is likely domain.com
+            cat $domain/recon/tmp.domains | grep -e "^$line$" > $domain/recon/allowed.inscope
+        fi
+    done < "$domain/in.scope"
 
 }
 
@@ -138,31 +182,25 @@ done
 # adds to tmp.domains for filtering
 function domain_scan() {
 
-for asset in $domain/in.scope; do
-    assetfinder $asset >> $domain/recon/domains/assetfinder.domains
-done
+echo "[+] Scanning with assetfinder."
 
-knockpy -f $domain/recon/domains/assetfinder.domains > $domain/recon/domains/knockpy.domains
+while IFS= read -r line; do
+    if [[ `echo $line | grep -e "^*"` != '' ]]; then
+        wildcard_asset=${line:2}
+        assetfinder $wildcard_asset >> $1/recon/domains/assetfinder.domains
+    else
+        assetfinder $line >> $1/recon/domains/assetfinder.domains
+    fi
+done < "$1/in.scope"
 
-scope_filter
+cat $1/recon/domains/assetfinder.domains | sort -u > $1/recon/tmp.domains
 
-}
+echo "[+] Fetching IPs and additional info with knockpy."
 
+knockpy -f $1/recon/tmp.domains > $1/recon/domains/knockpy.domains
 
+scope_filter $1
 
-function scope_filter() {
-
-    for line in $domain/out.scope; do
-        if [ echo $line | grep -e "^*" ]; then
-            sed "/${line:1}$/d" $domain/recon/tmp.domains
-        elif
-
-        else
-
-        fi
-    done
-
-    cat $domain/recon/tmp.domains | grep -iFf $domain/in.scope | sort -u >> $domain/recon/allowed.inscope
 }
 
 
@@ -178,11 +216,11 @@ if [[ $check != '' ]]; then
     exit 1
 fi
 
-read -p "[?] Enter the domain name: " program
+read -p "[?] Enter the program name: " program
 init $program
 read -p "[?] Place scope items in the $program directory's respective files. Press enter when done."
 
-domain_scan
+domain_scan $program
 
 
 }
