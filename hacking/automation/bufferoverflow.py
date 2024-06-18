@@ -8,9 +8,10 @@
 # set a breakpoint at the found address
 # use the test module tool to place the memory address within the eip
 # you might need to change the offset by 1 for it to work
-# the guides i used don't do that but i couldn't reproduce without subtracting 1
-
-# TODO fix issues with adding padding for final part of exploit
+# the guides I used don't do that but I couldn't reproduce without subtracting 1
+#
+# TODO 
+# fix issues with adding padding for final part of exploit
 
 import socket
 import subprocess
