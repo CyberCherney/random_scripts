@@ -1,4 +1,5 @@
-
+// a script to create formatting for my notes
+// this variation is for the bandit labs on overthewire
 
 for (let i = 0; i < 34; i++) {
     temp = i + 1;
