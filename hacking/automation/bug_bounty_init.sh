@@ -133,7 +133,7 @@ function init() {
 }
 
 
-# takes in.scope and out.scope and filters allowed domains and IPs
+# takes in.scope and out.scope and filters tmp.domain
 function scope_filter() {
 
     domain=$1
@@ -142,6 +142,7 @@ function scope_filter() {
 
     echo "[+] Removing out of scope objects."
     while read -r line || [[ -n $line ]]; do
+        # turns domain.com into domain\.com for regex filtering
         prep=`echo $line | sed 's/\./\\\./g'`
         if [[ `echo $line | grep -e "^*" | grep -e "*$"` != '' ]]; then
             # handles *.domain.*
@@ -161,6 +162,7 @@ function scope_filter() {
 
     echo "[+] Adding in scope items."
     while read line || [[ -n $line ]]; do
+        # turns domain.com into domain\.com for regex filtering
         prep=`echo $line | sed 's/\./\\\./g'`
         if [[ `echo $line | grep -e "^*" | grep -e "*$"` != '' ]]; then
             # handles *.domain.*
@@ -206,12 +208,13 @@ function domain_scan() {
 
 
 # probes for alive domains then screenshots
+# gowitness has some issues with screencapping certain sites, probably a captcha it can't pass or something
 function screen_cap() {
 
     domain=$1
 
     echo "[+] Probing for alive domains."
-    cat $1/recon/allowed.inscope | sort-u | httprobe -p https:443 | sed 's/https\?:\/\///' | tr -d ':443' >> $domain/recon/httprobe/tmp.alive
+    cat $1/recon/allowed.inscope | sort -u | httprobe -p https:443 | sed 's/https\?:\/\///' | tr -d ':443' >> $domain/recon/httprobe/tmp.alive
     sort -u $domain/recon/httprobe/tmp.alive > $domain/recon/httprobe/alive.domains
 
     echo "[+] Taking screenshots of alive domains."
@@ -256,6 +259,13 @@ while [[ $# -gt 0 ]]; do
         -r|--run-scans)
             main
             shift
+            ;;
+        *)
+            echo "USAGE:"
+            echo "-t or --tool-check to check if required tools are installed"
+            echo "-i or --install-tools to install missing tools"
+            echo "-r or --run-scans to start the tool"
+            exit 1
             ;;
     esac
 done
