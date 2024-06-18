@@ -1,17 +1,13 @@
 #!/bin/bash
 # simple subdomain scanner, filtering, and screenshotting script
-# this tool is more useful during a pentest and a hacking challenge or bug bounty
+# this tool is more useful during a pentest and a hacking challenge
+#
 # tools needed for this script:
 # assetfinder, amass*, httprobe, gowitness, google chrome in $PATH, subjack, waybackurls
 #
-# some of the above tools recommend using go get, instead use the following command format:
-# go install github.com/haccer/subjack@latest
-#
-# TODO:
-#	--Add tool auto install portion
-#	Add fail for not adding a proper url
-#	--Modify tools to be used by kali and parrot
-#	fix functionality in totality
+# this will auto install tools with go should you not have them installed
+# copied this from tcm-sec course, made a better version for bug bounty below:
+# https://github.com/CyberCherney/random_scripts/blob/main/hacking/automation/bug_bounty_init.sh
 
 
 
