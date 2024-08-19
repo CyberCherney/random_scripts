@@ -1,2 +1,5 @@
 _sandbox
 _current_htb_exploits
+node_modules
+package.json
+package-lock.json
