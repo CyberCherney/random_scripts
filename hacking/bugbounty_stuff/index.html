@@ -84,6 +84,33 @@
             </div>
         </div>
 
+        <h3>
+            <a href="https://www.bugbountyhunter.com/challenge?id=7">
+                You may only redirect to *.bugbountyhunter.com
+            </a>
+            <span class="label">
+                Open URL Redirect
+            </span>
+        </h3>
+
+        <div class="solution">
+            <div class="button-box">
+                The application at https://www.bugbountytraining.com/challenges/challenge-7.php hosts a redirect link on the page. That redirect link is controlled by the parameter ?redirectUri=
+                <br>
+                <br>
+                When checking for filters with the parameter it is clear that / \ and ? are filtered completely out, but that # causes the application to modify the link in an unexpected way. If the test was ?redirectUri=https://webhook.site#.bugbountyhunter.com the link turns into https://www.bugbountyhunter.com, rather than simply deleting the #1c86ee
+                <br>
+                <br>
+                It can then be deduced some application logic failure is happening within the first domain we are attempting to redirect to, and after using %E3%80%82 we can encode a . to achieve the redirect.
+                <br>
+                <br>
+                FULL PAYLOAD
+                <br>
+                ?redirectUri=https://webhook%E3%80%82site#.bugbountyhunter.com
+            </div>
+        </div>
+
+
         <h2>
             <a href="https://www.bugbountyhunter.com/training/#vtab-extended2">
                 Level up your hacking
