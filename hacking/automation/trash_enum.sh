@@ -7,6 +7,8 @@
 # add timestamps/spinning wheel
 # prettify the steps
 # solve issue if ffuf spits out hundreds of 200s
+# change nmap to rustscan
+# format results file to be markdown copy paste ready
 
 function subdomain_scan() {
     domain="$1"
@@ -63,12 +65,12 @@ fi
 
 # Finds open ports to work with in more depth
 
-if [ ! -f trash/nmap/nmap_port_sweep.xml ]; then
+if [ ! -f trash/nmap/nmap_port_sweep.txt ]; then
     echo "Sweeping ports:"
-    nmap -p- $IP -oX trash/nmap/nmap_port_sweep.xml
+    docker run -it --rm --name rustscan rustscan/rustscan:1.10.0 $IP | tee trash/nmap/nmap_port_sweep.txt
 fi
 
-open_ports=`xmlstarlet sel -t -v "//port/@portid" trash/nmap/nmap_port_sweep.xml | sed -z 's/\n/,/g'`
+open_ports=$(cat trash/nmap/nmap_port_sweep.txt | grep -oE "([0-9]+\.){3}[0-9]+:[0-9]+" | sed -E 's/([0-9]+\.){3}[0-9]+://g'  | sed -z 's/\n/,/')
 
 if [ ! -f trash/nmap/nmap_scan.xml ]; then
     echo "Running real scan:"
@@ -102,7 +104,6 @@ if [ -f gowitness.sqlite3 ]; then
     mv screenshots trash/gowitness
 fi
 
-rmdir reports
 
 # formatting the results file
 
