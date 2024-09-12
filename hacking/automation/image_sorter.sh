@@ -1,7 +1,10 @@
 #!/bin/bash
 # 
-# 
-# 
+# image ordering script to reduce some time in my workflow
+# takes a directory full of images with a definable prefix
+# then sorts them based on when last they were modified (in other words created)
+# numbers them for easier placement in writeups
+# starts httpserver module in python since I hack in VMs
 
 read -p "Enter the box name: " box
 prefix="$box""_"
@@ -19,10 +22,16 @@ i=1
 IFS=$'\t\n'
 for line in $(cat $directory/to_be_sorted | sort -u); do
     img=`echo "$line" | cut -b 37-`
-    stripped=`echo $img | sed "s/$prefix//g"`
+    stripped=`echo $img | sed "s/$$prefix//g"`
     new_name="$prefix""$i""_""$stripped"
-    cp $img $directory/$new_name
+    mv $img $directory/$new_name
     ((i++))
 done
 
+rm $directory/to_be_sorted
+cd $directory
+
+python3 -m http.server 8081
+echo "Server is up, run the following command:"
+read -p "wget -r http://192.168.2.69:8081/" 
 
