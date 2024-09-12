@@ -38,11 +38,11 @@ rm $directory/to_be_sorted
 
 cd $directory
 
-python3 -m http.server 8081
-echo "Server is up, run the following command:"
+echo "Server is up, run the following command, then Ctrl+C when done:"
 echo "wget -r http://192.168.2.69:8081/"
 echo "" 
-read -p "Hit Enter when done for cleanup."
+python3 -m http.server 8081
+read -p "Hit Enter for cleanup."
 
 cd ..
 mv $directory transfer
