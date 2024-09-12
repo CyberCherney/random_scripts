@@ -23,7 +23,7 @@ length=`ls | grep "$box""_" | wc -l | grep -oE [[:digit:]] | wc -l`
 IFS=$'\t\n' # makes the line search for new line instead of the default space
 for line in $(cat $directory/to_be_sorted | sort -u); do
     img=`echo "$line" | cut -b 37-`
-    stripped=`echo $img | sed "s/$$prefix//g"`
+    stripped=`echo $img | sed "s/^$prefix//g"`
     formatted_i=`printf "%0$length""d" "$i"`
     new_name="$prefix""$formatted_i""_""$stripped"
     mv $img $directory/$new_name
