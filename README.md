@@ -13,9 +13,9 @@ Broken down even further generally into scripts for various challenges, automati
 
 Primitive automation of GPIO pins and database management for a pi on my network. Will be more here in the future after I have more tech to automate. Potential project can be found below:
 
-Flipper Zero Keepsmile Bluetooth Light App (or [home assistant](https://www.home-assistant.io/) integration)
-PC Case LED corresponding to room temp
-Ambient underlighting an inverse intensity of outdoors
-Hummingbird feeder camera + auto picture snapping
-Looping music assistant (for pseudo randomizing loops I make)
-"Radio station" site replaying random songs I've looped
+Flipper Zero Keepsmile Bluetooth Light App (or [home assistant](https://www.home-assistant.io/) integration)  
+PC Case LED corresponding to room temp  
+Ambient underlighting an inverse intensity of outdoors  
+Hummingbird feeder camera + auto picture snapping  
+Looping music assistant (for pseudo randomizing loops I make)  
+"Radio station" site replaying random songs I've looped  
