@@ -3,13 +3,11 @@
 #
 # auto script for the way I perform bug bounties
 # scans and enums subdomains then filters based off scope
-# starts zap for Forced Browse
 # screencaps and nmap scans active scoped domains/IPs
 # 
 # 
 # TODO
 #   add IP scope filterer
-#   add ZAP proxy start
 #   add nmap scan (of scoped IPs)
 #   add GitRob running
 
@@ -19,7 +17,7 @@
 function tool_check() {
 
     uninstalled=()
-    tools=("knockpy" "assetfinder" "httprobe" "gowitness" "zaproxy" "gitrob")
+    tools=("knockpy" "assetfinder" "httprobe" "gowitness" "gitrob")
 
     for tool in ${tools[*]}; do
         check=`whereis $tool | sed "s/$tool://g"`
@@ -74,18 +72,6 @@ function tool_install() {
             gowitness)
                 echo "==> Installing gowitness"
                 go get github.com/sensepost/gowitness@latest
-                ;;
-            zaproxy)
-                echo "==> Installing zaproxy"
-                sudo apt install default-jre
-                loopback=`pwd`
-                cd /home/$USER/Downloads
-                wget https://github.com/zaproxy/zaproxy/releases/download/v2.15.0/ZAP_2_15_0_unix.sh
-                echo "==> Follow Installer"
-                sudo bash ZAP_2_15_0_unix.sh
-                wait
-                rm ZAP_2_15_0_unix.sh
-                cd $loopback
                 ;;
             gitrob)
                 echo "==> Installing Gitrob"
