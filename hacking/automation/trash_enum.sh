@@ -2,7 +2,8 @@
 # script to initially enumerate machines for various hacking challenges
 # baked the old webapp_enum.sh into this
 
-# todo, 
+# TODO:
+# fix script outputs
 # mute all scan progress
 # add timestamps/spinning wheel
 # prettify the steps
