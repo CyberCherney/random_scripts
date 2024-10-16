@@ -10,6 +10,7 @@
 #   add IP scope filterer
 #   add nmap scan (of scoped IPs)
 #   add GitRob running
+#   add wayback machine scanning of domain homepages and /robots.txt
 
 
 # checks for tool installation
