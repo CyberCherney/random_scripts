@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheTrashCan</title>
+    <style>
+        /* Sleek, metal-inspired styling */
+        body {
+            background-color: #1e1e1e;
+            color: #cfcfcf;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('https://your-dumpster-raccoon-image-url'); /* Replace with a suitable image */
+            background-size: cover;
+            background-blend-mode: multiply;
+        }
+
+        h1, h2 {
+            font-family: 'Roboto Condensed', sans-serif;
+            text-align: center;
+            color: #d0d0d0;
+            text-shadow: 1px 1px 5px #000;
+            letter-spacing: 1px;
+        }
+
+        form {
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.6);
+        }
+
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #6e6e6e;
+            background-color: #2a2a2a;
+            color: #cfcfcf;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        button {
+            background-color: #6e6e6e;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 2px 2px 10px #000000;
+        }
+
+        button:hover {
+            background-color: #909090;
+        }
+
+        #result {
+            margin-top: 20px;
+            color: #fff;
+            text-align: center;
+        }
+
+        a {
+            color: #909090;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            width: 600px;
+            background-color: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px 2px #000;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .log-button {
+            background-color: #909090;
+            padding: 10px 20px;
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 14px;
+            border-radius: 5px;
+            text-shadow: 1px 1px 3px black;
+            box-shadow: 2px 2px 10px #000;
+            display: inline-block;
+        }
+
+        .log-button:hover {
+            background-color: #b0b0b0;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Roboto+Condensed:wght@700&family=Roboto+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>TheTrashCan</h1>
+        <form id="payloadForm">
+            <label for="payload">Payload (HTML/JS/CSS):</label><br>
+            <textarea id="payload" rows="10" cols="50" placeholder="Write your payload here..."></textarea><br><br>
+
+            <label for="endpoint">Endpoint (e.g., payload1):</label><br>
+            <input type="text" id="endpoint" placeholder="Give it a name..."/><br><br>
+
+            <button type="button" onclick="savePayload()">Save Payload</button>
+        </form>
+
+        <div id="result" style="display: none;">
+            Payload saved! View it at: <a id="payloadLink" href="#">Click here</a>
+        </div>
+
+        <!-- Logs Button -->
+        <div class="button-container">
+            <a href="/logs" class="log-button">View Logs</a>
+        </div>
+    </div>
+
+    <script>
+        async function savePayload() {
+            const payload = document.getElementById('payload').value;
+            const endpoint = document.getElementById('endpoint').value;
+
+            const response = await fetch('/save-payload', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ payload, endpoint })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                const link = document.getElementById('payloadLink');
+                link.href = result.url;
+                link.textContent = result.url;
+
+                document.getElementById('result').style.display = 'block';
+            } else {
+                alert('Error saving payload');
+            }
+        }
+    </script>
+</body>
+</html>
