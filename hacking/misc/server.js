@@ -33,6 +33,14 @@ const server = http.createServer((req, res) => {
     }
 
     else if (pathname === '/logs') {
+        // Log the visit to the /logs page
+        accessLogs.push({
+            timestamp: new Date(),
+            url: '/logs',
+            method: 'GET',
+            data: null
+        });
+    
         // Generate the HTML for logs with the same style as the main page
         let logHTML = `
             <!DOCTYPE html>
@@ -146,6 +154,7 @@ const server = http.createServer((req, res) => {
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(logHTML);
     }
+    
     
     // Save payload request
     else if (pathname.startsWith('/save-payload')) {
