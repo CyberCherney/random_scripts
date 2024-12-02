@@ -205,7 +205,7 @@ function screen_cap() {
     sort -u $domain/recon/httprobe/tmp.alive > $domain/recon/httprobe/alive.domains
 
     echo "[+] Taking screenshots of alive domains."
-    gowitness file -f $domain/allowed.inscope
+    gowitness file -f $domain/recon/httprobe/alive.domains --threads 30
     mv screenshots $domain/recon/gowitness
     mv gowitness.sqlite3 $domain/recon/gowitness
 
