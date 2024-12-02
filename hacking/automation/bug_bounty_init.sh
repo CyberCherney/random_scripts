@@ -153,16 +153,16 @@ function scope_filter() {
         prep=`echo $line | sed 's/\./\\\./g'`
         if [[ `echo $line | grep -e "^*" | grep -e "*$"` != '' ]]; then
             # handles *.domain.*
-            cat $domain/recon/tmp.domains | grep -e "${prep:1:-1}" > $domain/allowed.inscope
+            cat $domain/recon/tmp.domains | grep -e "${prep:1:-1}" >> $domain/allowed.inscope
         elif [[ `echo $line | grep -e "^*"` != '' ]]; then
             # handles *.domain
-            cat $domain/recon/tmp.domains | grep -e "${prep:1}$" > $domain/allowed.inscope
+            cat $domain/recon/tmp.domains | grep -e "${prep:1}$" >> $domain/allowed.inscope
         elif [[ `echo $line | grep -e "*$"` != '' ]]; then
             # handles domain.*
-            cat $domain/recon/tmp.domains | grep -e "^${prep::-1}" > $domain/allowed.inscope
+            cat $domain/recon/tmp.domains | grep -e "^${prep::-1}" >> $domain/allowed.inscope
         else
             # end case is likely domain.com
-            cat $domain/recon/tmp.domains | grep -e "^$prep$" > $domain/allowed.inscope
+            cat $domain/recon/tmp.domains | grep -e "^$prep$" >> $domain/allowed.inscope
         fi
     done < "$domain/in.scope"
 
