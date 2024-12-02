@@ -210,8 +210,11 @@ function screen_cap() {
     mv gowitness.sqlite3 $domain/recon/gowitness
 
     # post gowitness scan the database can be used to filter more precisely:
+    # .output 404.md
     # SELECT url FROM urls WHERE response_reason LIKE "404 Not Found";
+    # .output stdout
     # cat 404.md | sed 's~http[s]*://~~g' > tmp
+    # cd screenshot
     # cat ../tmp | while read line; do mv "http-$line.png" 404; done
 
 }
