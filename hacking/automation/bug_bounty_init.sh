@@ -201,7 +201,7 @@ function screen_cap() {
     domain=$1
 
     echo "[+] Probing for alive domains."
-    cat $1/recon/allowed.inscope | sort -u | httprobe -p https:443 | sed 's/https\?:\/\///' | tr -d ':443' >> $domain/recon/httprobe/tmp.alive
+    cat $1/allowed.inscope | sort -u | httprobe -p https:443 | sed 's/https\?:\/\///' | tr -d ':443' >> $domain/recon/httprobe/tmp.alive
     sort -u $domain/recon/httprobe/tmp.alive > $domain/recon/httprobe/alive.domains
 
     echo "[+] Taking screenshots of alive domains."
