@@ -4,7 +4,7 @@
 # auto script for the way I perform bug bounties
 # scans and enums subdomains then filters based off scope
 # screencaps and nmap scans active scoped domains/IPs
-# 
+# makes a mindmap from a python script
 # 
 # TODO
 #   add IP scope filterer
@@ -220,8 +220,6 @@ function screen_cap() {
 }
 
 
-
-
 function main() {
 
     check=tool_check | sed 's/,/ /g'
@@ -239,6 +237,7 @@ function main() {
 
     domain_scan $program
     screen_cap $program
+    python3 /opt/domain_mindmaper.py $domain/allowed.inscope.md $domain/domain_mindmap.md
 
 }
 
