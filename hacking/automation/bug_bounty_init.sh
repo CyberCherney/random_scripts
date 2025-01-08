@@ -18,7 +18,7 @@
 function tool_check() {
 
     uninstalled=()
-    tools=("knockpy" "assetfinder" "httprobe" "gowitness" "gitrob")
+    tools=("knockpy" "assetfinder" "httprobe" "gowitness" "gitrob" "waymore")
 
     for tool in ${tools[*]}; do
         check=`whereis $tool | sed "s/$tool://g"`
