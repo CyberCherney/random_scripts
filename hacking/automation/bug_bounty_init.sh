@@ -230,6 +230,8 @@ function screen_cap() {
 # useful for finding parameters or apis that either used to exist or currently do
 function url_finder() {
 
+    domain=$1
+
     cat $domain/allowed.inscope.md | xargs -n1 -P10 -I{} waymore -i {} -mode U -oU $domain/recon/waymore/{}.md > /dev/null 2>&1
 
     find $domain/recon/waymore -type f -empty -delete
@@ -261,9 +263,18 @@ function main() {
         echo "/opt/domain_mindmapper.py not found, change location in script to run."
     fi
 
-    url_finder
+    url_finder $program
 
 }
+
+
+if [[ $# -eq 0 ]]; then
+    echo "USAGE:"
+    echo "-t or --tool-check to check if required tools are installed"
+    echo "-i or --install-tools to install missing tools"
+    echo "-r or --run-scans to start the tool"
+    exit 1
+fi
 
 
 while [[ $# -gt 0 ]]; do
@@ -279,13 +290,6 @@ while [[ $# -gt 0 ]]; do
         -r|--run-scans)
             main
             shift
-            ;;
-        *)
-            echo "USAGE:"
-            echo "-t or --tool-check to check if required tools are installed"
-            echo "-i or --install-tools to install missing tools"
-            echo "-r or --run-scans to start the tool"
-            exit 1
             ;;
     esac
 done
