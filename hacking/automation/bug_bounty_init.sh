@@ -242,6 +242,7 @@ function main() {
         python3 /opt/domain_mindmaper.py $domain/allowed.inscope.md $domain/domain_mindmap.md
     else
         echo "/opt/domain_mindmapper.py not found, change location in script to run."
+    fi
 
 }
 
