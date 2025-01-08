@@ -204,10 +204,10 @@ function screen_cap() {
     cat $1/allowed.inscope.md | sort -u | httprobe -p https:443 | sed 's/https\?:\/\///' | tr -d ':443' >> $domain/recon/httprobe/tmp.alive.md
     sort -u $domain/recon/httprobe/tmp.alive.md > $domain/recon/httprobe/alive.domains.md
 
-    echo "[+] Taking screenshots of alive domains."
-    gowitness file -f $domain/recon/httprobe/alive.domains.md --threads 30
-    mv screenshots $domain/recon/gowitness
-    mv gowitness.sqlite3 $domain/recon/gowitness
+    #echo "[+] Taking screenshots of alive domains."
+    #gowitness file -f $domain/recon/httprobe/alive.domains.md --threads 30
+    #mv screenshots $domain/recon/gowitness
+    #$mv gowitness.sqlite3 $domain/recon/gowitness
 
     # post gowitness scan the database can be used to filter more precisely:
     # .output 404.md
