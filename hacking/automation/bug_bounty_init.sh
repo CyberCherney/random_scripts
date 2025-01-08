@@ -88,6 +88,10 @@ function tool_install() {
                 cd $loopback
                 rmdir /home/$USER/Downloads/gitrob
                 ;;
+            waymore)
+                echo "==> Installing Waymore"
+                pip install waymore -q --user
+                ;;
         esac
     done
 
@@ -102,7 +106,7 @@ function init() {
     domain=$1
 
     # set up files and directories for check loop
-    directories=("$domain" "$domain/recon" "$domain/recon/domains" "$domain/recon/httprobe" "$domain/recon/gowitness" "$domain/recon/nmap")
+    directories=("$domain" "$domain/recon" "$domain/recon/domains" "$domain/recon/httprobe" "$domain/recon/gowitness" "$domain/recon/nmap" "$domain/recon/waymore")
     files=("$domain/in.scope.md" "$domain/out.scope.md" "$domain/recon/domains/assetfinder.domains.md" "$domain/recon/domains/knockpy.domains.md" "$domain/recon/httprobe/alive.domains.md" "$domain/recon/tmp.domains.md" "$domain/allowed.inscope.md" "$domain/recon/nmap/tmp.ips.md" "$domain/recon/nmap/ip.inscope.md" "$domain/recon/httprobe/tmp.alive.md")
 
     for dir in "${directories[@]}"; do
@@ -166,6 +170,8 @@ function scope_filter() {
         fi
     done < "$domain/in.scope.md"
 
+    sort $domain/allowed.inscope.md -o $domain/allowed.inscope.md
+
 }
 
 
@@ -219,6 +225,17 @@ function screen_cap() {
 
 }
 
+# finds URLs from a variety of sources
+# https://github.com/xnl-h4ck3r/waymore for more about how it does that
+# useful for finding parameters or apis that either used to exist or currently do
+function url_finder() {
+
+    cat $domain/allowed.inscope.md | xargs -n1 -P10 -I{} waymore -i {} -mode U -oU $domain/recon/waymore/{}.md > /dev/null 2>&1
+
+    find $domain/recon/waymore -type f -empty -delete
+
+}
+
 
 function main() {
 
@@ -243,6 +260,8 @@ function main() {
     else
         echo "/opt/domain_mindmapper.py not found, change location in script to run."
     fi
+
+    url_finder
 
 }
 
