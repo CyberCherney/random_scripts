@@ -232,8 +232,8 @@ function url_finder() {
 
     domain=$1
 
+    echo "[+] Finding URLs with waymore."
     cat $domain/allowed.inscope.md | xargs -n1 -P10 -I{} waymore -i {} -mode U -oU $domain/recon/waymore/{}.md > /dev/null 2>&1
-
     find $domain/recon/waymore -type f -empty -delete
 
 }
