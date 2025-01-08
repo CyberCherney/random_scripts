@@ -257,10 +257,11 @@ function main() {
     domain_scan $program
     screen_cap $program
 
-    if [ if "/opt/domain_mindmaper.py" ]; then
+    if [ -f "/opt/domain_mindmaper.py" ]; then
+        echo "[+] Creating mindmap for Obsidian."
         python3 /opt/domain_mindmaper.py $domain/allowed.inscope.md $domain/domain_mindmap.md
     else
-        echo "/opt/domain_mindmapper.py not found, change location in script to run."
+        echo "[-] /opt/domain_mindmapper.py not found, change location in script to run."
     fi
 
     url_finder $program
