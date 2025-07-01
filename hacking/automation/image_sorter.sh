@@ -1,42 +1,44 @@
 #!/bin/bash
 # 
 # image ordering script to reduce some time in my workflow
-# takes a directory full of images with a definable prefix
+# takes a directory full of images with a definable prefix (ex. hatrick_dashboard.png)
 # then sorts them based on when last they were modified (in other words created)
-# numbers them for easier placement in writeups
+# numbers them for easier placement in writeups (ex. hatrick_1_dashboard.png)
 # starts httpserver module in python since I hack in VMs
 
-read -p "Enter the box name: " box
+set -euo pipefail
+
+read -rp "Enter the box name: " box
 prefix="$box""_"
 directory="$box""-ordered"
 
-mkdir $directory
+mkdir "$directory"
+tmpfile=$(mktemp)
+trap 'rm -f "$tmpfile"' EXIT
 
-for line in `ls | grep "$box""_"`; do
-    modify_time=`stat $line | grep "Modify: " | sed "s/Modify: //g"`
+for line in "$box"_*; do
+    modify_time=$(stat -c "%Y" "$line")
     concat="$modify_time ""$line"
-    echo "$concat" >> $directory/to_be_sorted
+    echo "$concat" >> "$tmpfile"
 done
 
 i=1
-length=`ls | grep "$box""_" | wc -l | grep -oE [[:digit:]] | wc -l`
-IFS=$'\t\n' # makes the line search for new line instead of the default space
-for line in $(cat $directory/to_be_sorted | sort -u); do
-    img=`echo "$line" | cut -b 37-`
-    stripped=`echo $img | sed "s/^$prefix//g"`
-    formatted_i=`printf "%0$length""d" "$i"`
-    new_name="$prefix""$formatted_i""_""$stripped"
-    mv $img $directory/$new_name
-    ((i++))
-done
+count=$(ls "$box"_* | wc -l)
+length=${#count}
 
-rm $directory/to_be_sorted
+while read -r _ img; do
+    stripped=$(echo $img | sed "s/^$prefix//g")
+    formatted_i=$(printf "%0$length""d" "$i")
+    new_name="$prefix""$formatted_i""_""$stripped"
+    mv "$img" "$directory/$new_name"
+    ((i++))
+done < <(sort -n "$tmpfile")
 
 
 # this part is specifically for my environment 
 # remove or modify if you intend to use
 
-cd $directory
+cd "$directory"
 
 echo "Server is up, run the following command, then Ctrl+C when done:"
 echo "wget -r http://192.168.2.69:8081/"
@@ -45,4 +47,4 @@ python3 -m http.server 8081
 read -p "Hit Enter for cleanup."
 
 cd ..
-mv $directory transfer
+mv "$directory" transfer
